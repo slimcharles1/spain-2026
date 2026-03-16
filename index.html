@@ -426,6 +426,40 @@
     background: var(--light-gray);
     color: var(--navy);
   }
+
+  /* VENUE ADDRESSES */
+  .venue-address {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.4;
+  }
+  .map-btn {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--light-blue);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .map-btn.confirm {
+    background: var(--navy);
+    color: white;
+    padding: 4px 14px;
+  }
 </style>
 </head>
 <body>
@@ -523,7 +557,7 @@
       <div class="ov-info">
         <div class="ov-day">Day 6 · Thu May 21</div>
         <div class="ov-city">Ribera del Duero</div>
-        <div class="ov-highlight">Bodegas Protos · roast lamb · Gofío dinner (all 4)</div>
+        <div class="ov-highlight">Bodegas Protos · roast lamb · DSTAgE dinner (all 4)</div>
       </div>
       <div class="ov-arrow">›</div>
     </div>
@@ -546,7 +580,7 @@
       <li>URSO Hotel & Spa — Request early check-in May 16</li>
       <li>AVE train Madrid→Seville — Renfe.com (~€50-80/pp)</li>
       <li>Car rental Seville→Madrid — one-way (~€60-80)</li>
-      <li>Gofío Madrid — Table for 4, Thu May 21</li>
+      <li>DSTAgE Madrid — Table for 4, Thu May 21</li>
       <li>Bodegas Lustau & Tradición — Sherry tastings, book ahead</li>
       <li>Bodegas Protos — Ribera del Duero tour</li>
     </ul>
@@ -572,12 +606,13 @@
       <div class="event-time">8:00 AM</div>
       <div class="event-title">Check in at URSO Hotel & Spa</div>
       <div class="event-desc">Boutique hotel in Chamberí in a restored 1920s palace. Request early check-in when booking — they're great about it. Drop bags and freshen up.</div>
+      <div class="venue-address">Calle de Mejía Lequerica, 8 <span class="map-btn" data-q="URSO Hotel Spa Madrid" data-addr="Calle de Mejia Lequerica 8, 28004 Madrid, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> If the room isn't ready, they'll store luggage and you can use the spa.</div>
     </div>
     <div class="event">
       <div class="event-time">9:30 AM</div>
       <div class="event-title">Breakfast</div>
-      <div class="event-desc">URSO has a beautiful courtyard breakfast. Or walk to Tomá Café (Calle de la Palma 49) for specialty coffee and pastries — a Madrid institution.</div>
+      <div class="event-desc">URSO has a beautiful courtyard breakfast. Or walk to Tomá Café (Calle de la Palma, 49) for specialty coffee and pastries — a Madrid institution.</div>
     </div>
     <div class="event">
       <div class="event-time">10:30 AM</div>
@@ -588,6 +623,7 @@
       <div class="event-time">1:00 PM</div>
       <div class="event-title">Lunch at Mercado de San Miguel</div>
       <div class="event-desc">Gourmet market near Plaza Mayor. Graze on Manchego, Ibérico ham, croquetas, and a glass of Verdejo.</div>
+      <div class="venue-address">Plaza de San Miguel, s/n <span class="map-btn" data-q="Mercado de San Miguel Madrid" data-addr="Plaza de San Miguel, 28005 Madrid, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> Arrive before 1:30 PM to beat the lunch rush.</div>
     </div>
     <div class="event">
@@ -604,18 +640,20 @@
       <div class="event-time">8:30 PM</div>
       <div class="event-title">Vermut at La Venencia</div>
       <div class="event-desc">Legendary sherry bar in Huertas that hasn't changed since the 1920s. No photos allowed. Just fino, manzanilla, and oloroso from the barrel.</div>
+      <div class="venue-address">Calle de Echegaray, 7 <span class="map-btn" data-q="La Venencia Madrid" data-addr="Calle de Echegaray 7, 28014 Madrid, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> Cash only. Order a fino with olives.</div>
     </div>
     <div class="event highlight">
       <div class="event-time">9:30 PM</div>
       <div class="event-title">Tapas crawl in La Latina</div>
       <div class="event-desc">Calle Cava Baja is Madrid's best tapas street. Hit Juana La Loca (famous tortilla pintxo), Casa Lucas (modern tapas), and Txirimiri (Basque pintxos). Two or three stops with wine at each.</div>
+      <div class="venue-address">Calle de la Cava Baja <span class="map-btn" data-q="Cava Baja La Latina Madrid" data-addr="Calle de la Cava Baja, 28005 Madrid, Spain">📍</span></div>
     </div>
   </div>
   <div class="info-card hotel">
     <h3>🏨 URSO Hotel & Spa</h3>
     <ul>
-      <li>Calle de Mejía Lequerica, 8 · Chamberí</li>
+      <li>Calle de Mejía Lequerica, 8 · Chamberí <span class="map-btn" data-q="URSO Hotel Spa Madrid" data-addr="Calle de Mejia Lequerica 8, 28004 Madrid, Spain">📍</span></li>
       <li>Restored 1920s palace · 78 rooms · Full spa</li>
       <li>~€220-280/night · Early check-in friendly</li>
       <li>Check Amex FHR availability for extra perks</li>
@@ -657,11 +695,13 @@
       <div class="event-time">1:00 PM</div>
       <div class="event-title">Check in at Hotel Colón Gran Meliá</div>
       <div class="event-desc">Five-star on Plaza Nueva, overlooking the cathedral. Book through Amex FHR for $300 credit, daily breakfast, room upgrade, and late checkout.</div>
+      <div class="venue-address">Calle Canalejas, 1 <span class="map-btn" data-q="Hotel Colon Gran Melia Seville" data-addr="Calle Canalejas 1, 41001 Sevilla, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">1:30 PM</div>
       <div class="event-title">Lunch: Bodega Santa Cruz</div>
       <div class="event-desc">Beloved no-frills tapas bar on Calle Rodrigo Caro. Montaditos, fried fish, cheap fino. Perfect pre-match fuel.</div>
+      <div class="venue-address">Calle de Rodrigo Caro, 1 <span class="map-btn" data-q="Bodega Santa Cruz Seville" data-addr="Calle de Rodrigo Caro 1, 41004 Sevilla, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">3:30 PM</div>
@@ -672,6 +712,7 @@
       <div class="event-time">5:00 PM</div>
       <div class="event-title">⚽ Sevilla FC vs Real Madrid</div>
       <div class="event-desc">La Liga at the 43,000-seat Sánchez-Pizjuán. The atmosphere at a premium fixture like this is incredible. Gol Norte or Preferencia for the best experience.</div>
+      <div class="venue-address">Calle Sevilla Fútbol Club, s/n <span class="map-btn" data-q="Estadio Ramon Sanchez Pizjuan Seville" data-addr="Calle Sevilla Futbol Club, 41005 Sevilla, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> Tickets from ~$140 on SeatPick. Buy early — premium fixture.</div>
     </div>
     <div class="event">
@@ -683,12 +724,13 @@
       <div class="event-time">9:00 PM</div>
       <div class="event-title">Dinner: El Rinconcillo</div>
       <div class="event-desc">Seville's oldest bar since 1670. They chalk your tab on the counter. Carrillada (pork cheeks), espinacas con garbanzos, and house wine.</div>
+      <div class="venue-address">Calle Gerona, 40 <span class="map-btn" data-q="El Rinconcillo Seville" data-addr="Calle Gerona 40, 41003 Sevilla, Spain">📍</span></div>
     </div>
   </div>
   <div class="info-card hotel">
     <h3>🏨 Hotel Colón Gran Meliá — 3 Nights</h3>
     <ul>
-      <li>Canalejas, 1 · Plaza Nueva, Seville</li>
+      <li>Canalejas, 1 · Plaza Nueva, Seville <span class="map-btn" data-q="Hotel Colon Gran Melia Seville" data-addr="Calle Canalejas 1, 41001 Sevilla, Spain">📍</span></li>
       <li>Amex FHR: $300 F&B credit · breakfast for 2 · room upgrade · late checkout</li>
       <li>Rooftop plunge pool · Clarins spa</li>
       <li>~€275-350/night via FHR · Use $600 Amex hotel credit</li>
@@ -719,12 +761,14 @@
       <div class="event-time">10:30 AM</div>
       <div class="event-title">Bodegas Lustau</div>
       <div class="event-desc">One of Jerez's most respected sherry houses. Tour the solera system with tastings of fino, amontillado, oloroso, and PX. World-class winemaking with centuries of history.</div>
+      <div class="venue-address">Calle Arcos, 53, Jerez <span class="map-btn" data-q="Bodegas Lustau Jerez" data-addr="Calle Arcos 53, 11402 Jerez de la Frontera, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> Book at lustau.es. ~€15-25/person.</div>
     </div>
     <div class="event">
       <div class="event-time">12:15 PM</div>
       <div class="event-title">Lunch: Bar Juanito, Jerez</div>
       <div class="event-desc">Legendary tapas bar on Calle Pescadería Vieja. Famous alcachofas (artichokes) and chicharrones. Fino sherry from the barrel. Quick, perfect, affordable.</div>
+      <div class="venue-address">Calle Pescadería Vieja, 8-10, Jerez <span class="map-btn" data-q="Bar Juanito Jerez" data-addr="Calle Pescaderia Vieja 8, 11403 Jerez de la Frontera, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">1:15 PM</div>
@@ -736,6 +780,7 @@
       <div class="event-title">Playa de la Caleta — Beach Afternoon</div>
       <div class="event-desc">Golden sand flanked by two castles (Santa Catalina and San Sebastián). This is the Bond film beach from Die Another Day. Grab a spot, swim, and soak it in. The water in May is refreshing but swimmable (~67°F). Plenty of time to relax — you've got all afternoon.</div>
       <div class="event-tip"><strong>Tip:</strong> No lounger rentals here — bring towels from the hotel. There are showers on the beach.</div>
+      <div class="venue-address">Playa de la Caleta, Cádiz <span class="map-btn" data-q="Playa de la Caleta Cadiz" data-addr="Playa de la Caleta, 11002 Cadiz, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">4:30 PM</div>
@@ -746,6 +791,7 @@
       <div class="event-time">6:00 PM</div>
       <div class="event-title">Sunset drinks: La Clandestina</div>
       <div class="event-desc">Rooftop bar with views over the Atlantic. Cocktails or a glass of local white wine while the sun drops into the ocean. One of those moments.</div>
+      <div class="venue-address">Calle José del Toro, 23, Cádiz <span class="map-btn" data-q="La Clandestina Cadiz" data-addr="Calle Jose del Toro 23, 11004 Cadiz, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">7:30 PM</div>
@@ -756,6 +802,7 @@
       <div class="event-time">9:30 PM</div>
       <div class="event-title">Dinner: Eslava</div>
       <div class="event-desc">One of Seville's most acclaimed tapas restaurants in San Lorenzo. The slow-cooked egg with truffle and mushroom is legendary.</div>
+      <div class="venue-address">Calle Eslava, 3 <span class="map-btn" data-q="Eslava Seville" data-addr="Calle Eslava 3, 41002 Sevilla, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> No reservations for the bar. Arrive at 9 PM to snag a spot.</div>
     </div>
   </div>
@@ -779,22 +826,26 @@
       <div class="event-time">10:00 AM</div>
       <div class="event-title">Real Alcázar of Seville</div>
       <div class="event-desc">Breathtaking Mudéjar royal palace — lush gardens, Game of Thrones filming locations. Book timed entry on alcazarsevilla.org. Give yourself 2 hours.</div>
+      <div class="venue-address">Patio de Banderas, s/n <span class="map-btn" data-q="Real Alcazar Seville" data-addr="Patio de Banderas, 41004 Sevilla, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> The upper royal apartments tour (€6 extra) is worth it for smaller crowds.</div>
     </div>
     <div class="event">
       <div class="event-time">12:00 PM</div>
       <div class="event-title">Seville Cathedral & Giralda Tower</div>
       <div class="event-desc">World's largest Gothic cathedral. Climb the Giralda (originally a minaret) for panoramic views. It's a ramp, not stairs.</div>
+      <div class="venue-address">Av. de la Constitución, s/n <span class="map-btn" data-q="Catedral de Sevilla" data-addr="Avenida de la Constitucion, 41004 Sevilla, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">1:30 PM</div>
       <div class="event-title">Lunch: La Azotea</div>
       <div class="event-desc">Modern Andalusian cuisine. Salmorejo (chilled tomato soup), atún rojo (red tuna). Pair with Manzanilla sherry or Verdejo white.</div>
+      <div class="venue-address">Calle Conde de Barajas, 13 <span class="map-btn" data-q="La Azotea Seville" data-addr="Calle Conde de Barajas 13, 41002 Sevilla, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">3:00 PM</div>
       <div class="event-title">Wander Triana</div>
       <div class="event-desc">Cross the Guadalquivir to Seville's historic ceramics and flamenco neighborhood. Browse Triana Market for produce, olives, cured meats.</div>
+      <div class="venue-address">Calle San Jorge, 6 · Triana <span class="map-btn" data-q="Mercado de Triana Seville" data-addr="Calle San Jorge 6, 41010 Sevilla, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">5:00 PM</div>
@@ -809,12 +860,13 @@
     <div class="event">
       <div class="event-time">8:30 PM</div>
       <div class="event-title">Flamenco (optional)</div>
-      <div class="event-desc">La Carbonería is free in an old coal yard. Or book Casa de la Memoria for an intimate seated show (~€22).</div>
+      <div class="event-desc">La Carbonería is free in an old coal yard. Or book Casa de la Memoria (Calle Cuna, 6) for an intimate seated show (~€22).</div>
     </div>
     <div class="event">
       <div class="event-time">9:30 PM</div>
       <div class="event-title">Dinner: Casa Robles</div>
       <div class="event-desc">Elegant but unpretentious. Excellent seafood, Ibérico pork, and a deep wine list. A proper sit-down for your last Seville night.</div>
+      <div class="venue-address">Calle Álvarez Quintero, 58 <span class="map-btn" data-q="Casa Robles Seville" data-addr="Calle Alvarez Quintero 58, 41004 Sevilla, Spain">📍</span></div>
     </div>
   </div>
 </div>
@@ -842,6 +894,7 @@
       <div class="event-time">10:30 AM</div>
       <div class="event-title">Córdoba: Mezquita-Cathedral</div>
       <div class="event-desc">1.5 hour drive. The famous mosque-cathedral with its forest of red-and-white striped arches — one of Spain's most iconic buildings. Quick coffee in the Jewish Quarter after.</div>
+      <div class="venue-address">Calle Cardenal Herrero, 1, Córdoba <span class="map-btn" data-q="Mezquita Catedral Cordoba" data-addr="Calle Cardenal Herrero 1, 14003 Cordoba, Spain">📍</span></div>
     </div>
     <div class="event">
       <div class="event-time">12:30 PM</div>
@@ -873,6 +926,7 @@
       <div class="event-time">9:00 PM</div>
       <div class="event-title">Dinner: Sala de Despiece</div>
       <div class="event-desc">Buzzy modern tapas in Malasaña. Dishes on butcher paper, menu reads like a meat-cut chart. Creative, delicious, very Madrid.</div>
+      <div class="venue-address">Calle de Ponzano, 11 <span class="map-btn" data-q="Sala de Despiece Madrid" data-addr="Calle de Ponzano 11, 28010 Madrid, Spain">📍</span></div>
     </div>
   </div>
   <div class="info-card transport">
@@ -890,9 +944,9 @@
 <div class="day-container" id="day6">
   <div class="day-header">
     <div class="day-label">Day 6</div>
-    <h2>🍇 Ribera del Duero + Gofío</h2>
+    <h2>🍇 Ribera del Duero + DSTAgE</h2>
     <div class="day-date">Thursday, May 21</div>
-    <div class="day-summary">Day trip to Spain's great Tempranillo region — wineries, a castle, roast lamb lunch — then back to Madrid for dinner at Gofío with Anthony & Ang.</div>
+    <div class="day-summary">Day trip to Spain's great Tempranillo region — wineries, a castle, roast lamb lunch — then back to Madrid for dinner at DSTAgE with Anthony & Ang.</div>
   </div>
   <div class="timeline">
     <div class="event">
@@ -909,12 +963,14 @@
       <div class="event-time">10:30 AM</div>
       <div class="event-title">Bodegas Protos, Peñafiel</div>
       <div class="event-desc">Iconic Ribera winery built into the hillside beneath Peñafiel Castle. Richard Rogers-designed facility. Taste Crianza, Reserva, and Gran Reserva Tempranillos. The castle above has the Wine Museum.</div>
+      <div class="venue-address">Calle Bodegas Protos, 24-28, Peñafiel <span class="map-btn" data-q="Bodegas Protos Penafiel" data-addr="Calle Bodegas Protos 24, 47300 Penafiel, Valladolid, Spain">📍</span></div>
       <div class="event-tip"><strong>Tip:</strong> Book at bodegasprotos.com. Tours from ~€15.</div>
     </div>
     <div class="event wine">
       <div class="event-time">12:30 PM</div>
       <div class="event-title">Bodegas Emilio Moro</div>
       <div class="event-desc">Family-run with beautiful grounds. This is the intimate, Penedès-style winery experience you're looking for. Often includes food pairings.</div>
+      <div class="venue-address">Ctra. Peñafiel-Valoria, Pesquera de Duero <span class="map-btn" data-q="Bodegas Emilio Moro" data-addr="Carretera Penafiel Valoria, 47315 Pesquera de Duero, Valladolid, Spain">📍</span></div>
     </div>
     <div class="event highlight">
       <div class="event-time">2:00 PM</div>
@@ -933,14 +989,16 @@
     </div>
     <div class="event highlight">
       <div class="event-time">9:00 PM</div>
-      <div class="event-title">🌟 Dinner: Gofío — Table for 4</div>
-      <div class="event-desc">Your favorite from last time! Michelin-starred Canarian cuisine by Chef Sicilia. Reunite with Anthony & Ang for the big dinner. Book well ahead — this place fills up.</div>
-      <div class="event-tip"><strong>Tip:</strong> Reserve at gofio.rest or call +34 915 22 81 05. Mention any dietary needs. Tasting menu ~€85-95/pp.</div>
+      <div class="event-title">🌟 Dinner: DSTAgE — Table for 4</div>
+      <div class="event-desc">Two-Michelin-star tasting menu by Chef Diego Guerrero. 18+ courses fusing global flavors in an intimate 40-seat dining room. Reunite with Anthony & Ang for the big dinner. Book well ahead.</div>
+      <div class="venue-address">Calle de Regueros, 8 <span class="map-btn" data-q="DSTAgE Madrid" data-addr="Calle de Regueros 8, 28004 Madrid, Spain">📍</span></div>
+      <div class="event-tip"><strong>Tip:</strong> Reserve at dstageconcept.com or email reservas@dstageconcept.com. Tasting menu ~€195/pp. Allow 3-4 hours.</div>
     </div>
     <div class="event">
       <div class="event-time">11:00 PM</div>
       <div class="event-title">Nightcap: Salmon Guru</div>
       <div class="event-desc">One of the World's 50 Best Bars, in Huertas. Creative cocktails in a vibrant, artsy space. Perfect way to close out the trip.</div>
+      <div class="venue-address">Calle de Echegaray, 21 <span class="map-btn" data-q="Salmon Guru Madrid" data-addr="Calle de Echegaray 21, 28014 Madrid, Spain">📍</span></div>
     </div>
   </div>
 </div>
@@ -1016,8 +1074,8 @@
       <div class="budget-amt">~$350</div>
     </div>
     <div class="budget-row">
-      <div><div class="budget-cat">Dining & drinks (7 days)</div><div class="budget-note">Tapas to Gofío</div></div>
-      <div class="budget-amt">~$900</div>
+      <div><div class="budget-cat">Dining & drinks (7 days)</div><div class="budget-note">Tapas to DSTAgE</div></div>
+      <div class="budget-amt">~$1,130</div>
     </div>
     <div class="budget-row">
       <div><div class="budget-cat">Wine tastings & entries</div><div class="budget-note">4 regions</div></div>
@@ -1035,7 +1093,7 @@
       <div class="sub">Before credits</div>
     </div>
     <div style="text-align: right;">
-      <div class="amount">~$4,940</div>
+      <div class="amount">~$5,170</div>
     </div>
   </div>
 
@@ -1045,7 +1103,7 @@
     <div class="credit-line"><span>$600 hotel credit</span><span class="amt">−$600</span></div>
     <div class="credit-line"><span>$200 airline credit</span><span class="amt">−$200</span></div>
     <div class="credit-line" style="border-top: 1px solid #ddd; padding-top: 6px; margin-top: 4px; font-weight: 700;">
-      <span>After credits</span><span class="amt" style="font-size: 16px;">~$3,840</span>
+      <span>After credits</span><span class="amt" style="font-size: 16px;">~$4,070</span>
     </div>
   </div>
 </div>
@@ -1084,7 +1142,7 @@
       <li>Tapas bars: No reservations. Stand at the bar</li>
       <li>Tipping: 5-10% at sit-downs. Round up at tapas bars</li>
       <li>Vermut hour: 12-2 PM (traditional) or ~7 PM</li>
-      <li>Tapas: ~€15-25/pp · Sit-down: ~€40-70/pp · Gofío: ~€85-95/pp</li>
+      <li>Tapas: ~€15-25/pp · Sit-down: ~€40-70/pp · DSTAgE: ~€195/pp</li>
     </ul>
   </div>
 
@@ -1106,7 +1164,7 @@
       <li>Alcázar: alcazarsevilla.org</li>
       <li>Lustau: lustau.es</li>
       <li>Protos: bodegasprotos.com</li>
-      <li>Gofío: gofio.rest</li>
+      <li>DSTAgE: dstageconcept.com</li>
       <li>Amex FHR: americanexpress.com/travel</li>
       <li>Car rental: sixt.com / europcar.com</li>
     </ul>
@@ -1179,7 +1237,7 @@ function shareItinerary() {
 }
 
 function copyLink() {
-  const text = `Spain 2026 Itinerary — Madrid & Seville, May 15-22\n\nDay 1 (Sat 5/16): Arrive Madrid — URSO Hotel, Malasaña, La Venencia, La Latina tapas\nDay 2 (Sun 5/17): AVE to Seville — Sevilla vs Real Madrid 5PM, El Rinconcillo\nDay 3 (Mon 5/18): Sherry Triangle — Lustau, Tradición, Cádiz beach, Eslava\nDay 4 (Tue 5/19): Seville — Alcázar, Cathedral, Triana, vermut, flamenco\nDay 5 (Wed 5/20): Drive to Madrid — Córdoba, Valdepeñas wine, La Mancha\nDay 6 (Thu 5/21): Ribera del Duero — Protos, Emilio Moro, Gofío dinner (4 ppl)\nDay 7 (Fri 5/22): Fly home — IB 361, 12:20 PM, MAD→IAD\n\nFlights: Iberia nonstop IAD↔MAD\nHotels: URSO (Madrid), Colón Gran Meliá (Seville)\nConf: BR3EZO`;
+  const text = `Spain 2026 Itinerary — Madrid & Seville, May 15-22\n\nDay 1 (Sat 5/16): Arrive Madrid — URSO Hotel, Malasaña, La Venencia, La Latina tapas\nDay 2 (Sun 5/17): AVE to Seville — Sevilla vs Real Madrid 5PM, El Rinconcillo\nDay 3 (Mon 5/18): Sherry Triangle — Lustau, Tradición, Cádiz beach, Eslava\nDay 4 (Tue 5/19): Seville — Alcázar, Cathedral, Triana, vermut, flamenco\nDay 5 (Wed 5/20): Drive to Madrid — Córdoba, Valdepeñas wine, La Mancha\nDay 6 (Thu 5/21): Ribera del Duero — Protos, Emilio Moro, DSTAgE dinner (4 ppl)\nDay 7 (Fri 5/22): Fly home — IB 361, 12:20 PM, MAD→IAD\n\nFlights: Iberia nonstop IAD↔MAD\nHotels: URSO (Madrid), Colón Gran Meliá (Seville)\nConf: BR3EZO`;
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
@@ -1189,6 +1247,27 @@ function copyLink() {
     });
   }
 }
+
+
+// TWO-TAP MAP LINKS (prevents accidental opens)
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.map-btn');
+  // Reset all other confirm states
+  document.querySelectorAll('.map-btn.confirm').forEach(function(b) {
+    if (b !== btn) { b.classList.remove('confirm'); b.textContent = '\u{1F4CD}'; }
+  });
+  if (!btn) return;
+  if (btn.classList.contains('confirm')) {
+    var q = encodeURIComponent(btn.dataset.q);
+    var addr = encodeURIComponent(btn.dataset.addr);
+    window.open('https://maps.apple.com/?q=' + q + '&address=' + addr, '_blank');
+    btn.classList.remove('confirm');
+    btn.textContent = '\u{1F4CD}';
+  } else {
+    btn.classList.add('confirm');
+    btn.textContent = 'Open in Maps \u2197';
+  }
+});
 
 // Register service worker for offline use
 if ('serviceWorker' in navigator) {
