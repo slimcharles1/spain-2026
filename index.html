@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spain 2026">
+<meta name="theme-color" content="#1B2A4A">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>Spain 2026 — Charles & Carly</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #1B2A4A;
+    --red: #C0392B;
+    --olive: #5D6D3F;
+    --gold: #D4A843;
+    --sand: #FDF6EC;
+    --cream: #FFFDF7;
+    --light-olive: #EEF2E6;
+    --light-gold: #FFF8E7;
+    --light-blue: #EBF0F7;
+    --gray: #666;
+    --light-gray: #E8E8E8;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--cream);
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d4a7a 100%);
+    color: white;
+    padding: 48px 24px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--red), var(--gold), var(--olive));
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 42px;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+  }
+  .hero .subtitle {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 20px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 16px;
+  }
+  .hero .dates {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .hero .travelers {
+    margin-top: 12px;
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* FLIGHT BADGES */
+  .flights {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    margin: -20px 16px 16px;
+    position: relative;
+    z-index: 2;
+  }
+  .flight-badge {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--navy);
+  }
+  .flight-badge .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .flight-badge .route {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .flight-badge .detail {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+  .flight-badge .conf {
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* NAV TABS */
+  .nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 0;
+    padding: 0 16px;
+    margin-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav button {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav button.active {
+    color: var(--navy);
+    border-bottom-color: var(--red);
+  }
+  .nav button:hover { color: var(--navy); }
+
+  /* DAY CONTAINER */
+  .day-container {
+    display: none;
+    padding: 0 16px 100px;
+    animation: fadeIn 0.3s ease;
+  }
+  .day-container.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* DAY HEADER */
+  .day-header {
+    padding: 20px 0 12px;
+  }
+  .day-header .day-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+  .day-header h2 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 26px;
+    color: var(--navy);
+    margin: 2px 0;
+  }
+  .day-header .day-date {
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .day-header .day-summary {
+    font-size: 14px;
+    color: #555;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 20px;
+    margin-top: 16px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--light-gray);
+  }
+
+  .event {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 16px;
+  }
+  .event::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--olive);
+    z-index: 1;
+  }
+  .event.highlight::before {
+    border-color: var(--red);
+    background: var(--red);
+  }
+  .event.wine::before {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+
+  .event-time {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.5px;
+  }
+  .event-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 2px 0;
+  }
+  .event-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .event-tip {
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: var(--light-gold);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #7a6530;
+    line-height: 1.4;
+  }
+  .event-tip strong { color: var(--gold); }
+
+  /* INFO CARDS */
+  .info-card {
+    margin: 20px 0;
+    padding: 16px;
+    border-radius: 12px;
+    border-left: 4px solid var(--olive);
+  }
+  .info-card.hotel { background: var(--light-blue); border-left-color: var(--navy); }
+  .info-card.booking { background: var(--light-gold); border-left-color: var(--gold); }
+  .info-card.wine { background: var(--light-olive); border-left-color: var(--olive); }
+  .info-card.transport { background: #f0f0f0; border-left-color: var(--gray); }
+
+  .info-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .info-card p, .info-card li {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .info-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .info-card li {
+    padding: 3px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .info-card li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--olive);
+    font-weight: bold;
+  }
+
+  /* OVERVIEW TAB */
+  .overview-grid {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .overview-day {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.15s;
+    gap: 12px;
+  }
+  .overview-day:active { transform: scale(0.98); }
+  .overview-day .ov-emoji {
+    font-size: 24px;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .overview-day .ov-info { flex: 1; }
+  .overview-day .ov-day {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .overview-day .ov-city {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .overview-day .ov-highlight {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 1px;
+  }
+  .overview-day .ov-arrow {
+    color: var(--light-gray);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* BUDGET TAB */
+  .budget-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--light-gray);
+  }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-cat { font-size: 14px; color: #444; flex: 1; }
+  .budget-amt { font-size: 14px; font-weight: 700; color: var(--navy); text-align: right; }
+  .budget-note { font-size: 11px; color: var(--gray); }
+  .budget-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    margin-top: 12px;
+    background: var(--navy);
+    border-radius: 10px;
+    color: white;
+  }
+  .budget-total .label { font-size: 14px; font-weight: 600; }
+  .budget-total .amount { font-size: 18px; font-weight: 700; color: var(--gold); }
+  .budget-total .sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+
+  .credit-card {
+    background: var(--light-gold);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+  }
+  .credit-card h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .credit-card .credit-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 3px 0;
+    color: #555;
+  }
+  .credit-card .credit-line .amt { font-weight: 600; color: var(--olive); }
+
+  /* SHARE BUTTON */
+  .share-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    background: white;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+  .share-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .share-btn:active { transform: scale(0.97); }
+  .share-btn.primary {
+    background: var(--navy);
+    color: white;
+  }
+  .share-btn.secondary {
+    background: var(--light-gray);
+    color: var(--navy);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>SPAIN</h1>
+  <div class="subtitle">Madrid & Seville</div>
+  <div class="dates">May 15 – 22, 2026</div>
+  <div class="travelers">Charles & Carly · Anthony & Ang</div>
+</div>
+
+<div class="flights">
+  <div class="flight-badge">
+    <div class="label">Outbound</div>
+    <div class="route">IAD → MAD</div>
+    <div class="detail">Iberia · Fri May 15</div>
+    <div class="detail">Nonstop · ~5:00 PM</div>
+  </div>
+  <div class="flight-badge">
+    <div class="label">Return</div>
+    <div class="route">MAD → IAD</div>
+    <div class="detail">IB 361 · Fri May 22</div>
+    <div class="detail">12:20 PM · 9h 10m</div>
+    <div class="conf">BR3EZO</div>
+  </div>
+</div>
+
+<nav class="nav" id="nav">
+  <button class="active" data-tab="overview">Overview</button>
+  <button data-tab="day1">Day 1</button>
+  <button data-tab="day2">Day 2</button>
+  <button data-tab="day3">Day 3</button>
+  <button data-tab="day4">Day 4</button>
+  <button data-tab="day5">Day 5</button>
+  <button data-tab="day6">Day 6</button>
+  <button data-tab="day7">Day 7</button>
+  <button data-tab="budget">Budget</button>
+  <button data-tab="info">Info</button>
+</nav>
+
+<!-- ===== OVERVIEW ===== -->
+<div class="day-container active" id="overview">
+  <div class="day-header">
+    <h2>Your Week in Spain</h2>
+    <div class="day-summary">Food and wine through Madrid and Andalusia, built around the Sevilla FC match and three wine regions. Tap any day to see the full schedule.</div>
+  </div>
+  <div class="overview-grid">
+    <div class="overview-day" onclick="goToDay('day1')">
+      <div class="ov-emoji">✈️</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 1 · Sat May 16</div>
+        <div class="ov-city">Arrive Madrid</div>
+        <div class="ov-highlight">Land 6:50 AM · Malasaña · La Venencia · tapas in La Latina</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+    <div class="overview-day" onclick="goToDay('day2')">
+      <div class="ov-emoji">⚽</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 2 · Sun May 17</div>
+        <div class="ov-city">Madrid → Seville</div>
+        <div class="ov-highlight">AVE train · Sevilla vs Real Madrid 5 PM · El Rinconcillo</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+    <div class="overview-day" onclick="goToDay('day3')">
+      <div class="ov-emoji">🍷</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 3 · Mon May 18</div>
+        <div class="ov-city">Sherry Triangle</div>
+        <div class="ov-highlight">Bodegas Lustau · Cádiz beach afternoon · sunset drinks · Eslava</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+    <div class="overview-day" onclick="goToDay('day4')">
+      <div class="ov-emoji">🏛️</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 4 · Tue May 19</div>
+        <div class="ov-city">Seville</div>
+        <div class="ov-highlight">Alcázar · Cathedral · Triana · vermut · flamenco</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+    <div class="overview-day" onclick="goToDay('day5')">
+      <div class="ov-emoji">🚗</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 5 · Wed May 20</div>
+        <div class="ov-city">Drive to Madrid</div>
+        <div class="ov-highlight">Córdoba Mezquita · Valdepeñas wine · La Mancha</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+    <div class="overview-day" onclick="goToDay('day6')">
+      <div class="ov-emoji">🍇</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 6 · Thu May 21</div>
+        <div class="ov-city">Ribera del Duero</div>
+        <div class="ov-highlight">Bodegas Protos · roast lamb · Gofío dinner (all 4)</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+    <div class="overview-day" onclick="goToDay('day7')">
+      <div class="ov-emoji">🏠</div>
+      <div class="ov-info">
+        <div class="ov-day">Day 7 · Fri May 22</div>
+        <div class="ov-city">Fly Home</div>
+        <div class="ov-highlight">IB 361 · 12:20 PM · MAD → IAD</div>
+      </div>
+      <div class="ov-arrow">›</div>
+    </div>
+  </div>
+
+  <div class="info-card booking" style="margin-top: 24px;">
+    <h3>🔑 Key Bookings</h3>
+    <ul>
+      <li>Sevilla vs Real Madrid tickets — May 17, 5 PM (~$140+/seat)</li>
+      <li>Hotel Colón Gran Meliá — Amex FHR ($300 credit + breakfast)</li>
+      <li>URSO Hotel & Spa — Request early check-in May 16</li>
+      <li>AVE train Madrid→Seville — Renfe.com (~€50-80/pp)</li>
+      <li>Car rental Seville→Madrid — one-way (~€60-80)</li>
+      <li>Gofío Madrid — Table for 4, Thu May 21</li>
+      <li>Bodegas Lustau & Tradición — Sherry tastings, book ahead</li>
+      <li>Bodegas Protos — Ribera del Duero tour</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== DAY 1 ===== -->
+<div class="day-container" id="day1">
+  <div class="day-header">
+    <div class="day-label">Day 1</div>
+    <h2>✈️ Arrive Madrid</h2>
+    <div class="day-date">Saturday, May 16</div>
+    <div class="day-summary">Land early, check in, and ease into Madrid with a market lunch, Retiro Park, and an epic tapas crawl through La Latina.</div>
+  </div>
+  <div class="timeline">
+    <div class="event highlight">
+      <div class="event-time">6:50 AM</div>
+      <div class="event-title">Land at Madrid-Barajas T4</div>
+      <div class="event-desc">Immigration is quick for US passports. Grab bags and head to the taxi rank.</div>
+      <div class="event-tip"><strong>Tip:</strong> Flat-rate taxi from T4 to central Madrid is €33.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">8:00 AM</div>
+      <div class="event-title">Check in at URSO Hotel & Spa</div>
+      <div class="event-desc">Boutique hotel in Chamberí in a restored 1920s palace. Request early check-in when booking — they're great about it. Drop bags and freshen up.</div>
+      <div class="event-tip"><strong>Tip:</strong> If the room isn't ready, they'll store luggage and you can use the spa.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:30 AM</div>
+      <div class="event-title">Breakfast</div>
+      <div class="event-desc">URSO has a beautiful courtyard breakfast. Or walk to Tomá Café (Calle de la Palma 49) for specialty coffee and pastries — a Madrid institution.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">10:30 AM</div>
+      <div class="event-title">Explore Malasaña & Chueca</div>
+      <div class="event-desc">Madrid's most vibrant neighborhoods. Independent shops, street art, café culture. Walk down to Gran Vía and through Plaza de Cibeles.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">1:00 PM</div>
+      <div class="event-title">Lunch at Mercado de San Miguel</div>
+      <div class="event-desc">Gourmet market near Plaza Mayor. Graze on Manchego, Ibérico ham, croquetas, and a glass of Verdejo.</div>
+      <div class="event-tip"><strong>Tip:</strong> Arrive before 1:30 PM to beat the lunch rush.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">3:00 PM</div>
+      <div class="event-title">Retiro Park & Prado Area</div>
+      <div class="event-desc">Rent a rowboat on the lake, see the Crystal Palace. If you've got energy, the Prado is right there. Otherwise just enjoy the park.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">5:00 PM</div>
+      <div class="event-title">Siesta / Spa</div>
+      <div class="event-desc">You've been up since you landed. Head back, nap, use the thermal spa circuit. Recharge.</div>
+    </div>
+    <div class="event wine">
+      <div class="event-time">8:30 PM</div>
+      <div class="event-title">Vermut at La Venencia</div>
+      <div class="event-desc">Legendary sherry bar in Huertas that hasn't changed since the 1920s. No photos allowed. Just fino, manzanilla, and oloroso from the barrel.</div>
+      <div class="event-tip"><strong>Tip:</strong> Cash only. Order a fino with olives.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">9:30 PM</div>
+      <div class="event-title">Tapas crawl in La Latina</div>
+      <div class="event-desc">Calle Cava Baja is Madrid's best tapas street. Hit Juana La Loca (famous tortilla pintxo), Casa Lucas (modern tapas), and Txirimiri (Basque pintxos). Two or three stops with wine at each.</div>
+    </div>
+  </div>
+  <div class="info-card hotel">
+    <h3>🏨 URSO Hotel & Spa</h3>
+    <ul>
+      <li>Calle de Mejía Lequerica, 8 · Chamberí</li>
+      <li>Restored 1920s palace · 78 rooms · Full spa</li>
+      <li>~€220-280/night · Early check-in friendly</li>
+      <li>Check Amex FHR availability for extra perks</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== DAY 2 ===== -->
+<div class="day-container" id="day2">
+  <div class="day-header">
+    <div class="day-label">Day 2</div>
+    <h2>⚽ Madrid → Seville</h2>
+    <div class="day-date">Sunday, May 17</div>
+    <div class="day-summary">High-speed train to Seville, check into the Gran Meliá, and catch Sevilla FC vs Real Madrid at the Sánchez-Pizjuán.</div>
+  </div>
+  <div class="timeline">
+    <div class="event">
+      <div class="event-time">8:00 AM</div>
+      <div class="event-title">Breakfast at URSO</div>
+      <div class="event-desc">Fuel up. Tostada con tomate (classic Spanish toast with grated tomato and olive oil) and strong café con leche.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:30 AM</div>
+      <div class="event-title">Taxi to Atocha Station</div>
+      <div class="event-desc">Madrid's main AVE hub. The station has a famous indoor tropical garden worth a look while you wait.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">10:00 AM</div>
+      <div class="event-title">AVE Train → Seville</div>
+      <div class="event-desc">2 hours 30 minutes of comfortable high-speed rail. WiFi, café car. Book Preferente class for more legroom (~€20 more).</div>
+      <div class="event-tip"><strong>Tip:</strong> Book on Renfe.com. Morning trains run frequently.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">12:30 PM</div>
+      <div class="event-title">Arrive Sevilla-Santa Justa</div>
+      <div class="event-desc">Quick taxi to your hotel. The station is ~15 minutes from the historic center.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">1:00 PM</div>
+      <div class="event-title">Check in at Hotel Colón Gran Meliá</div>
+      <div class="event-desc">Five-star on Plaza Nueva, overlooking the cathedral. Book through Amex FHR for $300 credit, daily breakfast, room upgrade, and late checkout.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">1:30 PM</div>
+      <div class="event-title">Lunch: Bodega Santa Cruz</div>
+      <div class="event-desc">Beloved no-frills tapas bar on Calle Rodrigo Caro. Montaditos, fried fish, cheap fino. Perfect pre-match fuel.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">3:30 PM</div>
+      <div class="event-title">Walk to the Stadium</div>
+      <div class="event-desc">25-minute walk through Nervión, or quick taxi. Soak up the pre-match atmosphere — Seville's football culture is electric.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">5:00 PM</div>
+      <div class="event-title">⚽ Sevilla FC vs Real Madrid</div>
+      <div class="event-desc">La Liga at the 43,000-seat Sánchez-Pizjuán. The atmosphere at a premium fixture like this is incredible. Gol Norte or Preferencia for the best experience.</div>
+      <div class="event-tip"><strong>Tip:</strong> Tickets from ~$140 on SeatPick. Buy early — premium fixture.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">7:30 PM</div>
+      <div class="event-title">Post-match drinks</div>
+      <div class="event-desc">Cañas (small draft beers) at the bars around the stadium. The neighborhood buzzes after matches.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:00 PM</div>
+      <div class="event-title">Dinner: El Rinconcillo</div>
+      <div class="event-desc">Seville's oldest bar since 1670. They chalk your tab on the counter. Carrillada (pork cheeks), espinacas con garbanzos, and house wine.</div>
+    </div>
+  </div>
+  <div class="info-card hotel">
+    <h3>🏨 Hotel Colón Gran Meliá — 3 Nights</h3>
+    <ul>
+      <li>Canalejas, 1 · Plaza Nueva, Seville</li>
+      <li>Amex FHR: $300 F&B credit · breakfast for 2 · room upgrade · late checkout</li>
+      <li>Rooftop plunge pool · Clarins spa</li>
+      <li>~€275-350/night via FHR · Use $600 Amex hotel credit</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== DAY 3 ===== -->
+<div class="day-container" id="day3">
+  <div class="day-header">
+    <div class="day-label">Day 3</div>
+    <h2>🍷🏖️ Sherry & Cádiz Beach</h2>
+    <div class="day-date">Monday, May 18</div>
+    <div class="day-summary">Sherry tasting in Jerez, then a long beach afternoon in Cádiz with sunset drinks over the Atlantic. Rent a car for the day.</div>
+  </div>
+  <div class="timeline">
+    <div class="event">
+      <div class="event-time">8:30 AM</div>
+      <div class="event-title">Breakfast at the hotel</div>
+      <div class="event-desc">FHR complimentary breakfast: fresh OJ, Ibérico ham, local pastries, café con leche.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:30 AM</div>
+      <div class="event-title">Drive to Jerez (~1 hr)</div>
+      <div class="event-desc">Rent a car for the day (~€40) or book a guided tour through La Belle Seville / Viator (~€90-120/pp with tastings).</div>
+    </div>
+    <div class="event wine">
+      <div class="event-time">10:30 AM</div>
+      <div class="event-title">Bodegas Lustau</div>
+      <div class="event-desc">One of Jerez's most respected sherry houses. Tour the solera system with tastings of fino, amontillado, oloroso, and PX. World-class winemaking with centuries of history.</div>
+      <div class="event-tip"><strong>Tip:</strong> Book at lustau.es. ~€15-25/person.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">12:15 PM</div>
+      <div class="event-title">Lunch: Bar Juanito, Jerez</div>
+      <div class="event-desc">Legendary tapas bar on Calle Pescadería Vieja. Famous alcachofas (artichokes) and chicharrones. Fino sherry from the barrel. Quick, perfect, affordable.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">1:15 PM</div>
+      <div class="event-title">Drive to Cádiz (30 min)</div>
+      <div class="event-desc">Europe's oldest continuously inhabited city. The coastal drive is gorgeous.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">2:00 PM</div>
+      <div class="event-title">Playa de la Caleta — Beach Afternoon</div>
+      <div class="event-desc">Golden sand flanked by two castles (Santa Catalina and San Sebastián). This is the Bond film beach from Die Another Day. Grab a spot, swim, and soak it in. The water in May is refreshing but swimmable (~67°F). Plenty of time to relax — you've got all afternoon.</div>
+      <div class="event-tip"><strong>Tip:</strong> No lounger rentals here — bring towels from the hotel. There are showers on the beach.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">4:30 PM</div>
+      <div class="event-title">Wander Old Town Cádiz</div>
+      <div class="event-desc">Rinse off and explore the old town — Plaza de las Flores, the seafront promenade along Campo del Sur, Cádiz Cathedral. The late afternoon light here is golden and gorgeous.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">6:00 PM</div>
+      <div class="event-title">Sunset drinks: La Clandestina</div>
+      <div class="event-desc">Rooftop bar with views over the Atlantic. Cocktails or a glass of local white wine while the sun drops into the ocean. One of those moments.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">7:30 PM</div>
+      <div class="event-title">Drive back to Seville (~1 hr 15 min)</div>
+      <div class="event-desc">Return the rental car at the hotel or keep it overnight if you want it for Day 4.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">9:30 PM</div>
+      <div class="event-title">Dinner: Eslava</div>
+      <div class="event-desc">One of Seville's most acclaimed tapas restaurants in San Lorenzo. The slow-cooked egg with truffle and mushroom is legendary.</div>
+      <div class="event-tip"><strong>Tip:</strong> No reservations for the bar. Arrive at 9 PM to snag a spot.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 4 ===== -->
+<div class="day-container" id="day4">
+  <div class="day-header">
+    <div class="day-label">Day 4</div>
+    <h2>🏛️ Seville: Culture & Tapas</h2>
+    <div class="day-date">Tuesday, May 19</div>
+    <div class="day-summary">Alcázar, the Cathedral, crossing into Triana, and a vermut-to-flamenco evening.</div>
+  </div>
+  <div class="timeline">
+    <div class="event">
+      <div class="event-time">9:00 AM</div>
+      <div class="event-title">Breakfast at the hotel</div>
+      <div class="event-desc">Leisurely start. Use that FHR credit.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">10:00 AM</div>
+      <div class="event-title">Real Alcázar of Seville</div>
+      <div class="event-desc">Breathtaking Mudéjar royal palace — lush gardens, Game of Thrones filming locations. Book timed entry on alcazarsevilla.org. Give yourself 2 hours.</div>
+      <div class="event-tip"><strong>Tip:</strong> The upper royal apartments tour (€6 extra) is worth it for smaller crowds.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">12:00 PM</div>
+      <div class="event-title">Seville Cathedral & Giralda Tower</div>
+      <div class="event-desc">World's largest Gothic cathedral. Climb the Giralda (originally a minaret) for panoramic views. It's a ramp, not stairs.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">1:30 PM</div>
+      <div class="event-title">Lunch: La Azotea</div>
+      <div class="event-desc">Modern Andalusian cuisine. Salmorejo (chilled tomato soup), atún rojo (red tuna). Pair with Manzanilla sherry or Verdejo white.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">3:00 PM</div>
+      <div class="event-title">Wander Triana</div>
+      <div class="event-desc">Cross the Guadalquivir to Seville's historic ceramics and flamenco neighborhood. Browse Triana Market for produce, olives, cured meats.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">5:00 PM</div>
+      <div class="event-title">Pool time at the hotel</div>
+      <div class="event-desc">Rooftop plunge pool at the Colón Gran Meliá. May in Seville is ~80°F — perfect for an afternoon dip.</div>
+    </div>
+    <div class="event wine">
+      <div class="event-time">7:00 PM</div>
+      <div class="event-title">Vermut at Antiguo Bar Abadía</div>
+      <div class="event-desc">A neighborhood vermutería in Santa Cruz. House-made vermouth on tap, marinated olives, anchovies. This is the wine bar / vermut experience.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">8:30 PM</div>
+      <div class="event-title">Flamenco (optional)</div>
+      <div class="event-desc">La Carbonería is free in an old coal yard. Or book Casa de la Memoria for an intimate seated show (~€22).</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:30 PM</div>
+      <div class="event-title">Dinner: Casa Robles</div>
+      <div class="event-desc">Elegant but unpretentious. Excellent seafood, Ibérico pork, and a deep wine list. A proper sit-down for your last Seville night.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 5 ===== -->
+<div class="day-container" id="day5">
+  <div class="day-header">
+    <div class="day-label">Day 5</div>
+    <h2>🚗 Drive to Madrid via Wine Country</h2>
+    <div class="day-date">Wednesday, May 20</div>
+    <div class="day-summary">Road trip through the Spanish heartland — Córdoba's Mezquita, La Mancha wine tastings, and Don Quixote's windmill country.</div>
+  </div>
+  <div class="timeline">
+    <div class="event">
+      <div class="event-time">8:30 AM</div>
+      <div class="event-title">Breakfast & check out</div>
+      <div class="event-desc">Use remaining FHR credit at breakfast.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:00 AM</div>
+      <div class="event-title">Pick up rental car</div>
+      <div class="event-desc">Santa Justa station or hotel area. Mid-size or SUV through SIXT or Europcar. One-way to Madrid is standard (~€60-80 total).</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">10:30 AM</div>
+      <div class="event-title">Córdoba: Mezquita-Cathedral</div>
+      <div class="event-desc">1.5 hour drive. The famous mosque-cathedral with its forest of red-and-white striped arches — one of Spain's most iconic buildings. Quick coffee in the Jewish Quarter after.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">12:30 PM</div>
+      <div class="event-title">Drive into La Mancha</div>
+      <div class="event-desc">North on the A-4 through rolling plains. Windmills, olive groves, and vineyards to the horizon. Quintessentially Spanish.</div>
+    </div>
+    <div class="event wine">
+      <div class="event-time">1:30 PM</div>
+      <div class="event-title">Wine tasting in Valdepeñas</div>
+      <div class="event-desc">Right on the highway. Stop at Bodegas Navarro López or Bodegas Real for Tempranillo (called Cencibel here) and Airén whites. Pair with Manchego cheese.</div>
+      <div class="event-tip"><strong>Tip:</strong> Tastings are often free or €5-10.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">3:00 PM</div>
+      <div class="event-title">Lunch at a roadside venta</div>
+      <div class="event-desc">Hearty Manchegan cuisine: migas (fried breadcrumbs with chorizo), pisto manchego (Spanish ratatouille), local wine. Don Quixote country.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">4:30 PM</div>
+      <div class="event-title">Continue to Madrid (~2 hrs)</div>
+      <div class="event-desc">Straight shot up the A-4.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">6:30 PM</div>
+      <div class="event-title">Check into URSO Hotel & Spa</div>
+      <div class="event-desc">Drop the car at a nearby rental return. Use the thermal spa circuit to unwind from the drive.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:00 PM</div>
+      <div class="event-title">Dinner: Sala de Despiece</div>
+      <div class="event-desc">Buzzy modern tapas in Malasaña. Dishes on butcher paper, menu reads like a meat-cut chart. Creative, delicious, very Madrid.</div>
+    </div>
+  </div>
+  <div class="info-card transport">
+    <h3>🚗 Car Rental Details</h3>
+    <ul>
+      <li>~530 km (330 mi) · 5 hrs direct, 7-8 hrs with stops</li>
+      <li>~€60-80 one-way + ~€30-40 fuel · Mostly toll-free via A-4</li>
+      <li>US license is valid for short stays in Spain</li>
+      <li>Drop off at Madrid Atocha or Chamartín station</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== DAY 6 ===== -->
+<div class="day-container" id="day6">
+  <div class="day-header">
+    <div class="day-label">Day 6</div>
+    <h2>🍇 Ribera del Duero + Gofío</h2>
+    <div class="day-date">Thursday, May 21</div>
+    <div class="day-summary">Day trip to Spain's great Tempranillo region — wineries, a castle, roast lamb lunch — then back to Madrid for dinner at Gofío with Anthony & Ang.</div>
+  </div>
+  <div class="timeline">
+    <div class="event">
+      <div class="event-time">8:00 AM</div>
+      <div class="event-title">Early breakfast at URSO</div>
+      <div class="event-desc">Quick start for the drive north.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">8:30 AM</div>
+      <div class="event-title">Drive to Ribera del Duero (~2 hrs)</div>
+      <div class="event-desc">North on the A-1 toward Peñafiel. The Duero River valley landscape is beautiful.</div>
+    </div>
+    <div class="event wine">
+      <div class="event-time">10:30 AM</div>
+      <div class="event-title">Bodegas Protos, Peñafiel</div>
+      <div class="event-desc">Iconic Ribera winery built into the hillside beneath Peñafiel Castle. Richard Rogers-designed facility. Taste Crianza, Reserva, and Gran Reserva Tempranillos. The castle above has the Wine Museum.</div>
+      <div class="event-tip"><strong>Tip:</strong> Book at bodegasprotos.com. Tours from ~€15.</div>
+    </div>
+    <div class="event wine">
+      <div class="event-time">12:30 PM</div>
+      <div class="event-title">Bodegas Emilio Moro</div>
+      <div class="event-desc">Family-run with beautiful grounds. This is the intimate, Penedès-style winery experience you're looking for. Often includes food pairings.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">2:00 PM</div>
+      <div class="event-title">Lunch: Aranda de Duero</div>
+      <div class="event-desc">Famous for lechazo — roast suckling lamb in wood-fired ovens. Try Asador Casa Florencio or Mesón de la Villa. Pair with a local Ribera Reserva. Quintessential Castilian meal.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">4:00 PM</div>
+      <div class="event-title">Drive back to Madrid (~2 hrs)</div>
+      <div class="event-desc">Wine in the trunk, memories in the bank.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">6:00 PM</div>
+      <div class="event-title">Free time / Shopping</div>
+      <div class="event-desc">Salamanca neighborhood for upscale shopping, or pick up gifts — olive oil, saffron, cerámica tiles.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">9:00 PM</div>
+      <div class="event-title">🌟 Dinner: Gofío — Table for 4</div>
+      <div class="event-desc">Your favorite from last time! Michelin-starred Canarian cuisine by Chef Sicilia. Reunite with Anthony & Ang for the big dinner. Book well ahead — this place fills up.</div>
+      <div class="event-tip"><strong>Tip:</strong> Reserve at gofio.rest or call +34 915 22 81 05. Mention any dietary needs. Tasting menu ~€85-95/pp.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">11:00 PM</div>
+      <div class="event-title">Nightcap: Salmon Guru</div>
+      <div class="event-desc">One of the World's 50 Best Bars, in Huertas. Creative cocktails in a vibrant, artsy space. Perfect way to close out the trip.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAY 7 ===== -->
+<div class="day-container" id="day7">
+  <div class="day-header">
+    <div class="day-label">Day 7</div>
+    <h2>✈️ Fly Home</h2>
+    <div class="day-date">Friday, May 22</div>
+    <div class="day-summary">Last breakfast, then head to Barajas for your afternoon flight home.</div>
+  </div>
+  <div class="timeline">
+    <div class="event">
+      <div class="event-time">7:30 AM</div>
+      <div class="event-title">Wake up & pack</div>
+      <div class="event-desc">Flight at 12:20 PM. Barajas T4 recommends 3 hours early, but 2.5 is fine.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">8:00 AM</div>
+      <div class="event-title">Final breakfast at URSO</div>
+      <div class="event-desc">Savor that last café con leche.</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:00 AM</div>
+      <div class="event-title">Check out & taxi to Barajas T4</div>
+      <div class="event-desc">Flat-rate €33. Or Metro from Alonso Martínez (~40 min).</div>
+    </div>
+    <div class="event">
+      <div class="event-time">9:30 AM</div>
+      <div class="event-title">Airport — T4</div>
+      <div class="event-desc">Security and passport control. Duty-free for last-minute wine, ham, or saffron.</div>
+    </div>
+    <div class="event highlight">
+      <div class="event-time">12:20 PM</div>
+      <div class="event-title">IB 361 · MAD → IAD</div>
+      <div class="event-desc">9h 10min nonstop on the A321neo. Arrive 3:30 PM at Dulles.</div>
+      <div class="event-tip"><strong>Tip:</strong> Check Iberia app at check-in for Premium Economy upgrade (~€150-200/pp). Confirmation: BR3EZO</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BUDGET ===== -->
+<div class="day-container" id="budget">
+  <div class="day-header">
+    <h2>💰 Estimated Budget</h2>
+    <div class="day-summary">For 2 people (Charles & Carly), 7 days. All estimates in USD.</div>
+  </div>
+
+  <div style="background: white; border-radius: 12px; padding: 16px; margin-top: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+    <div class="budget-row">
+      <div><div class="budget-cat">Flights (Iberia roundtrip)</div><div class="budget-note">Booked</div></div>
+      <div class="budget-amt">~$1,330</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">URSO Hotel (3 nights)</div><div class="budget-note">€220-280/night</div></div>
+      <div class="budget-amt">~$750</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">Colón Gran Meliá (3 nights)</div><div class="budget-note">FHR rate</div></div>
+      <div class="budget-amt">~$950</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">AVE Train (2 pax)</div><div class="budget-note">Renfe</div></div>
+      <div class="budget-amt">~$130</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">Car rentals (2 days)</div><div class="budget-note">Seville→MAD + Ribera</div></div>
+      <div class="budget-amt">~$170</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">Football tickets (2 seats)</div><div class="budget-note">SeatPick</div></div>
+      <div class="budget-amt">~$350</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">Dining & drinks (7 days)</div><div class="budget-note">Tapas to Gofío</div></div>
+      <div class="budget-amt">~$900</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">Wine tastings & entries</div><div class="budget-note">4 regions</div></div>
+      <div class="budget-amt">~$180</div>
+    </div>
+    <div class="budget-row">
+      <div><div class="budget-cat">Taxis, metro, misc</div></div>
+      <div class="budget-amt">~$180</div>
+    </div>
+  </div>
+
+  <div class="budget-total">
+    <div>
+      <div class="label">Estimated Total</div>
+      <div class="sub">Before credits</div>
+    </div>
+    <div style="text-align: right;">
+      <div class="amount">~$4,940</div>
+    </div>
+  </div>
+
+  <div class="credit-card">
+    <h4>Amex Credits & Offsets</h4>
+    <div class="credit-line"><span>FHR $300 F&B credit</span><span class="amt">−$300</span></div>
+    <div class="credit-line"><span>$600 hotel credit</span><span class="amt">−$600</span></div>
+    <div class="credit-line"><span>$200 airline credit</span><span class="amt">−$200</span></div>
+    <div class="credit-line" style="border-top: 1px solid #ddd; padding-top: 6px; margin-top: 4px; font-weight: 700;">
+      <span>After credits</span><span class="amt" style="font-size: 16px;">~$3,840</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INFO ===== -->
+<div class="day-container" id="info">
+  <div class="day-header">
+    <h2>📋 Practical Info</h2>
+  </div>
+
+  <div class="info-card transport">
+    <h3>🚆 Getting Around</h3>
+    <ul>
+      <li>Madrid: Metro + walking. Airport taxi flat €33</li>
+      <li>Madrid→Seville: AVE from Atocha (2.5 hrs, ~€50-80/pp)</li>
+      <li>Sherry Triangle: Rental car or guided tour</li>
+      <li>Seville→Madrid: One-way car rental (5-8 hrs with stops)</li>
+      <li>Ribera del Duero: Rental car from Madrid (~2 hrs each way)</li>
+    </ul>
+  </div>
+
+  <div class="info-card wine">
+    <h3>🍷 Wine Regions</h3>
+    <ul>
+      <li><strong>Sherry Triangle</strong> (Jerez/Cádiz) — Fino, Manzanilla, Oloroso, PX</li>
+      <li><strong>Montilla-Moriles</strong> (Córdoba) — Unfortified sherry-style wines</li>
+      <li><strong>Valdepeñas / La Mancha</strong> — Tempranillo, Airén whites</li>
+      <li><strong>Ribera del Duero</strong> — World-class Tempranillo (your Penedès equivalent)</li>
+    </ul>
+  </div>
+
+  <div class="info-card booking">
+    <h3>🍽️ Dining Tips</h3>
+    <ul>
+      <li>Lunch: 1:30-3:30 PM · Dinner: 9:00-11:00 PM</li>
+      <li>Tapas bars: No reservations. Stand at the bar</li>
+      <li>Tipping: 5-10% at sit-downs. Round up at tapas bars</li>
+      <li>Vermut hour: 12-2 PM (traditional) or ~7 PM</li>
+      <li>Tapas: ~€15-25/pp · Sit-down: ~€40-70/pp · Gofío: ~€85-95/pp</li>
+    </ul>
+  </div>
+
+  <div class="info-card hotel">
+    <h3>☀️ Weather & Packing</h3>
+    <ul>
+      <li>Madrid: 60-77°F (16-25°C), mostly sunny</li>
+      <li>Seville: 65-86°F (18-30°C), hot and sunny</li>
+      <li>Pack: Light layers, walking shoes, sunglasses, sunscreen</li>
+      <li>Dress: Smart casual for restaurants. No shorts at cathedrals</li>
+    </ul>
+  </div>
+
+  <div class="info-card booking">
+    <h3>🔗 Key Links</h3>
+    <ul>
+      <li>AVE Trains: renfe.com/es/en</li>
+      <li>Football: seatpick.com</li>
+      <li>Alcázar: alcazarsevilla.org</li>
+      <li>Lustau: lustau.es</li>
+      <li>Protos: bodegasprotos.com</li>
+      <li>Gofío: gofio.rest</li>
+      <li>Amex FHR: americanexpress.com/travel</li>
+      <li>Car rental: sixt.com / europcar.com</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SHARE BAR -->
+<div class="share-bar">
+  <button class="share-btn secondary" onclick="copyLink()">Copy Link</button>
+  <button class="share-btn primary" onclick="shareItinerary()">Share</button>
+</div>
+
+<script>
+// TAB NAVIGATION
+const nav = document.getElementById('nav');
+const buttons = nav.querySelectorAll('button');
+const containers = document.querySelectorAll('.day-container');
+
+function switchTab(tabId) {
+  buttons.forEach(b => b.classList.remove('active'));
+  containers.forEach(c => c.classList.remove('active'));
+  const btn = nav.querySelector(`[data-tab="${tabId}"]`);
+  if (btn) btn.classList.add('active');
+  const container = document.getElementById(tabId);
+  if (container) container.classList.add('active');
+  // Scroll nav to show active button
+  if (btn) btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+function goToDay(tabId) {
+  switchTab(tabId);
+}
+
+// SWIPE GESTURES
+let touchStartX = 0;
+let touchEndX = 0;
+const tabOrder = ['overview','day1','day2','day3','day4','day5','day6','day7','budget','info'];
+
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 80) {
+    const currentTab = document.querySelector('.day-container.active').id;
+    const currentIdx = tabOrder.indexOf(currentTab);
+    if (diff > 0 && currentIdx < tabOrder.length - 1) {
+      switchTab(tabOrder[currentIdx + 1]);
+    } else if (diff < 0 && currentIdx > 0) {
+      switchTab(tabOrder[currentIdx - 1]);
+    }
+  }
+}, false);
+
+// SHARE
+function shareItinerary() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Spain 2026 — Charles & Carly',
+      text: 'Our Spain itinerary: Madrid & Seville, May 15-22, 2026',
+      url: window.location.href
+    }).catch(() => {});
+  } else {
+    copyLink();
+  }
+}
+
+function copyLink() {
+  const text = `Spain 2026 Itinerary — Madrid & Seville, May 15-22\n\nDay 1 (Sat 5/16): Arrive Madrid — URSO Hotel, Malasaña, La Venencia, La Latina tapas\nDay 2 (Sun 5/17): AVE to Seville — Sevilla vs Real Madrid 5PM, El Rinconcillo\nDay 3 (Mon 5/18): Sherry Triangle — Lustau, Tradición, Cádiz beach, Eslava\nDay 4 (Tue 5/19): Seville — Alcázar, Cathedral, Triana, vermut, flamenco\nDay 5 (Wed 5/20): Drive to Madrid — Córdoba, Valdepeñas wine, La Mancha\nDay 6 (Thu 5/21): Ribera del Duero — Protos, Emilio Moro, Gofío dinner (4 ppl)\nDay 7 (Fri 5/22): Fly home — IB 361, 12:20 PM, MAD→IAD\n\nFlights: Iberia nonstop IAD↔MAD\nHotels: URSO (Madrid), Colón Gran Meliá (Seville)\nConf: BR3EZO`;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.share-btn.secondary');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+    });
+  }
+}
+
+// Register service worker for offline use
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+
+</body>
+</html>
