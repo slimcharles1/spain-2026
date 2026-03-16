@@ -460,9 +460,170 @@
     color: white;
     padding: 4px 14px;
   }
+
+  /* DYNAMIC THEMES */
+  body, .hero, .nav button, .share-btn.primary, .share-bar {
+    transition: background 0.5s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  .hero::after { transition: background 0.5s ease; }
+  .timeline::before { transition: background 0.3s ease; }
+  .event::before { transition: border-color 0.3s ease, background 0.3s ease; }
+
+  /* --- OVERVIEW: Classic Spain flag --- */
+  body.theme-overview { background: #FFFDF7; }
+  .theme-overview .hero { background: linear-gradient(135deg, #1B2A4A 0%, #2d4a7a 100%); }
+  .theme-overview .hero::after { background: linear-gradient(90deg, #C0392B, #D4A843, #5D6D3F); }
+  .theme-overview .nav button.active { color: #1B2A4A; border-bottom-color: #C0392B; }
+  .theme-overview .day-header .day-label { color: #C0392B; }
+  .theme-overview .day-header h2 { color: #1B2A4A; }
+  .theme-overview .share-btn.primary { background: #1B2A4A; }
+
+  /* --- DAY 1: Warm Madrid terracotta --- */
+  body.theme-day1 { background: #FFF9F2; }
+  .theme-day1 .hero { background: linear-gradient(135deg, #8B4513 0%, #C0724A 100%); }
+  .theme-day1 .hero::after { background: linear-gradient(90deg, #D2691E, #DAA520, #CD853F); }
+  .theme-day1 .nav button.active { color: #8B4513; border-bottom-color: #D2691E; }
+  .theme-day1 .day-header .day-label { color: #C0724A; }
+  .theme-day1 .day-header h2 { color: #5C3317; }
+  .theme-day1 .event.highlight::before { border-color: #D2691E; background: #D2691E; }
+  .theme-day1 .event-time { color: #5C3317; }
+  .theme-day1 .event-title { color: #5C3317; }
+  .theme-day1 .event.wine::before { border-color: #DAA520; background: #DAA520; }
+  .theme-day1 .event::before { border-color: #C0724A; }
+  .theme-day1 .info-card.hotel { background: #FFF0E0; border-left-color: #8B4513; }
+  .theme-day1 .share-btn.primary { background: #8B4513; }
+  .theme-day1 .flight-badge { border-left-color: #8B4513; }
+  .theme-day1 .flight-badge .route { color: #5C3317; }
+
+  /* --- DAY 2: Real Madrid — Hala Madrid --- */
+  body.theme-day2 { background: #F8F8FF; }
+  .theme-day2 .hero { background: linear-gradient(135deg, #0A1128 0%, #1C2951 50%, #2B1855 100%); }
+  .theme-day2 .hero::after { background: linear-gradient(90deg, #FEBE10, #FFFFFF, #FEBE10); }
+  .theme-day2 .hero h1 { text-shadow: 0 0 40px rgba(254,190,16,0.3); }
+  .theme-day2 .hero .subtitle { color: #FEBE10; }
+  .theme-day2 .nav button.active { color: #0A1128; border-bottom-color: #FEBE10; }
+  .theme-day2 .day-header .day-label { color: #FEBE10; letter-spacing: 3px; }
+  .theme-day2 .day-header h2 { color: #0A1128; }
+  .theme-day2 .event.highlight::before { border-color: #FEBE10; background: #FEBE10; }
+  .theme-day2 .event-time { color: #0A1128; }
+  .theme-day2 .event-title { color: #0A1128; }
+  .theme-day2 .event::before { border-color: #1C2951; }
+  .theme-day2 .event.wine::before { border-color: #FEBE10; background: #FEBE10; }
+  .theme-day2 .info-card.hotel { background: #F0F0FF; border-left-color: #0A1128; }
+  .theme-day2 .event-tip { background: #FFF9E0; color: #5C4B00; }
+  .theme-day2 .event-tip strong { color: #FEBE10; }
+  .theme-day2 .overview-day .ov-day { color: #FEBE10; }
+  .theme-day2 .share-btn.primary { background: #0A1128; }
+  .theme-day2 .flight-badge { border-left-color: #FEBE10; }
+  .theme-day2 .flight-badge .route { color: #0A1128; }
+  .theme-day2 .flight-badge .conf { color: #FEBE10; }
+  .theme-day2 .map-btn { background: #F0F0FF; color: #0A1128; }
+  .theme-day2 .map-btn.confirm { background: #0A1128; color: #FEBE10; }
+
+  /* --- DAY 3: Coastal Cádiz --- */
+  body.theme-day3 { background: #F5FAFE; }
+  .theme-day3 .hero { background: linear-gradient(135deg, #0D4F6B 0%, #1A8CAF 100%); }
+  .theme-day3 .hero::after { background: linear-gradient(90deg, #1A8CAF, #F4D58D, #E8B960); }
+  .theme-day3 .nav button.active { color: #0D4F6B; border-bottom-color: #1A8CAF; }
+  .theme-day3 .day-header .day-label { color: #1A8CAF; }
+  .theme-day3 .day-header h2 { color: #0D4F6B; }
+  .theme-day3 .event.highlight::before { border-color: #1A8CAF; background: #1A8CAF; }
+  .theme-day3 .event-time { color: #0D4F6B; }
+  .theme-day3 .event-title { color: #0D4F6B; }
+  .theme-day3 .event::before { border-color: #6BB8D0; }
+  .theme-day3 .event.wine::before { border-color: #E8B960; background: #E8B960; }
+  .theme-day3 .event-tip { background: #E8F6FC; color: #0D4F6B; }
+  .theme-day3 .event-tip strong { color: #1A8CAF; }
+  .theme-day3 .share-btn.primary { background: #0D4F6B; }
+  .theme-day3 .map-btn { background: #E8F6FC; color: #0D4F6B; }
+
+  /* --- DAY 4: Andalusian azulejo — ceramic & flamenco --- */
+  body.theme-day4 { background: #FFF8F0; }
+  .theme-day4 .hero { background: linear-gradient(135deg, #B5450B 0%, #D4722A 100%); }
+  .theme-day4 .hero::after { background: linear-gradient(90deg, #1E5B8A, #E8A838, #B5450B); }
+  .theme-day4 .nav button.active { color: #B5450B; border-bottom-color: #E8A838; }
+  .theme-day4 .day-header .day-label { color: #B5450B; }
+  .theme-day4 .day-header h2 { color: #6B2A06; }
+  .theme-day4 .event.highlight::before { border-color: #B5450B; background: #B5450B; }
+  .theme-day4 .event-time { color: #6B2A06; }
+  .theme-day4 .event-title { color: #6B2A06; }
+  .theme-day4 .event::before { border-color: #D4722A; }
+  .theme-day4 .event.wine::before { border-color: #E8A838; background: #E8A838; }
+  .theme-day4 .info-card.hotel { background: #FFF0E0; border-left-color: #B5450B; }
+  .theme-day4 .event-tip { background: #FFF3E0; color: #6B2A06; }
+  .theme-day4 .event-tip strong { color: #E8A838; }
+  .theme-day4 .share-btn.primary { background: #B5450B; }
+  .theme-day4 .map-btn { background: #FFF0E0; color: #6B2A06; }
+
+  /* --- DAY 5: La Mancha olive & earth --- */
+  body.theme-day5 { background: #F8F6F0; }
+  .theme-day5 .hero { background: linear-gradient(135deg, #4A5D23 0%, #6B7F3A 100%); }
+  .theme-day5 .hero::after { background: linear-gradient(90deg, #8B7D3C, #C9B458, #4A5D23); }
+  .theme-day5 .nav button.active { color: #4A5D23; border-bottom-color: #8B7D3C; }
+  .theme-day5 .day-header .day-label { color: #6B7F3A; }
+  .theme-day5 .day-header h2 { color: #3A4A1A; }
+  .theme-day5 .event.highlight::before { border-color: #6B7F3A; background: #6B7F3A; }
+  .theme-day5 .event-time { color: #3A4A1A; }
+  .theme-day5 .event-title { color: #3A4A1A; }
+  .theme-day5 .event::before { border-color: #8B9E5A; }
+  .theme-day5 .event.wine::before { border-color: #C9B458; background: #C9B458; }
+  .theme-day5 .info-card.transport { background: #F0EEE0; border-left-color: #4A5D23; }
+  .theme-day5 .event-tip { background: #F5F3E0; color: #4A3A10; }
+  .theme-day5 .event-tip strong { color: #8B7D3C; }
+  .theme-day5 .share-btn.primary { background: #4A5D23; }
+  .theme-day5 .map-btn { background: #F0EEE0; color: #3A4A1A; }
+
+  /* --- DAY 6: Ribera del Duero wine --- */
+  body.theme-day6 { background: #FBF5F8; }
+  .theme-day6 .hero { background: linear-gradient(135deg, #4A1032 0%, #722040 100%); }
+  .theme-day6 .hero::after { background: linear-gradient(90deg, #8B1A4A, #C9A84C, #4A6B35); }
+  .theme-day6 .nav button.active { color: #4A1032; border-bottom-color: #8B1A4A; }
+  .theme-day6 .day-header .day-label { color: #8B1A4A; }
+  .theme-day6 .day-header h2 { color: #3A0A22; }
+  .theme-day6 .event.highlight::before { border-color: #8B1A4A; background: #8B1A4A; }
+  .theme-day6 .event-time { color: #3A0A22; }
+  .theme-day6 .event-title { color: #3A0A22; }
+  .theme-day6 .event::before { border-color: #A85070; }
+  .theme-day6 .event.wine::before { border-color: #8B1A4A; background: #8B1A4A; }
+  .theme-day6 .event-tip { background: #FCF0F5; color: #4A1032; }
+  .theme-day6 .event-tip strong { color: #8B1A4A; }
+  .theme-day6 .share-btn.primary { background: #4A1032; }
+  .theme-day6 .map-btn { background: #FCF0F5; color: #4A1032; }
+  .theme-day6 .map-btn.confirm { background: #4A1032; }
+
+  /* --- DAY 7: Sunrise departure --- */
+  body.theme-day7 { background: #FFF9F0; }
+  .theme-day7 .hero { background: linear-gradient(135deg, #2C3E50 0%, #5D7B93 100%); }
+  .theme-day7 .hero::after { background: linear-gradient(90deg, #E8A838, #F4D58D, #5D7B93); }
+  .theme-day7 .nav button.active { color: #2C3E50; border-bottom-color: #E8A838; }
+  .theme-day7 .day-header .day-label { color: #E8A838; }
+  .theme-day7 .day-header h2 { color: #2C3E50; }
+  .theme-day7 .event.highlight::before { border-color: #E8A838; background: #E8A838; }
+  .theme-day7 .event-time { color: #2C3E50; }
+  .theme-day7 .event-title { color: #2C3E50; }
+  .theme-day7 .event::before { border-color: #8FAABE; }
+  .theme-day7 .share-btn.primary { background: #2C3E50; }
+  .theme-day7 .map-btn { background: #FFF3E0; color: #2C3E50; }
+
+  /* --- BUDGET: Professional navy --- */
+  body.theme-budget { background: #F5F7FA; }
+  .theme-budget .hero { background: linear-gradient(135deg, #1B2A4A 0%, #2d4a7a 100%); }
+  .theme-budget .hero::after { background: linear-gradient(90deg, #D4A843, #1B2A4A, #D4A843); }
+  .theme-budget .nav button.active { color: #1B2A4A; border-bottom-color: #D4A843; }
+  .theme-budget .day-header h2 { color: #1B2A4A; }
+  .theme-budget .share-btn.primary { background: #1B2A4A; }
+
+  /* --- INFO: Neutral warm --- */
+  body.theme-info { background: #FAFAF5; }
+  .theme-info .hero { background: linear-gradient(135deg, #3D5A40 0%, #5D8060 100%); }
+  .theme-info .hero::after { background: linear-gradient(90deg, #5D8060, #D4A843, #C0392B); }
+  .theme-info .nav button.active { color: #3D5A40; border-bottom-color: #5D8060; }
+  .theme-info .day-header h2 { color: #3D5A40; }
+  .theme-info .info-card h3 { color: #3D5A40; }
+  .theme-info .share-btn.primary { background: #3D5A40; }
 </style>
 </head>
-<body>
+<body class="theme-overview">
 
 <div class="hero">
   <h1>SPAIN</h1>
@@ -1178,12 +1339,47 @@
 </div>
 
 <script>
+
+// DYNAMIC THEME PER DAY
+const themeMap = {
+  overview: 'theme-overview',
+  day1: 'theme-day1',
+  day2: 'theme-day2',
+  day3: 'theme-day3',
+  day4: 'theme-day4',
+  day5: 'theme-day5',
+  day6: 'theme-day6',
+  day7: 'theme-day7',
+  budget: 'theme-budget',
+  info: 'theme-info'
+};
+
+function applyTheme(tabId) {
+  // Remove all theme classes
+  Object.values(themeMap).forEach(cls => document.body.classList.remove(cls));
+  // Apply new theme
+  const theme = themeMap[tabId];
+  if (theme) document.body.classList.add(theme);
+  // Update meta theme-color for mobile browser chrome
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  const heroColors = {
+    overview: '#1B2A4A', day1: '#8B4513', day2: '#0A1128', day3: '#0D4F6B',
+    day4: '#B5450B', day5: '#4A5D23', day6: '#4A1032', day7: '#2C3E50',
+    budget: '#1B2A4A', info: '#3D5A40'
+  };
+  if (metaTheme && heroColors[tabId]) metaTheme.setAttribute('content', heroColors[tabId]);
+}
+
+// Apply initial theme
+applyTheme('overview');
+
 // TAB NAVIGATION
 const nav = document.getElementById('nav');
 const buttons = nav.querySelectorAll('button');
 const containers = document.querySelectorAll('.day-container');
 
 function switchTab(tabId) {
+  applyTheme(tabId);
   buttons.forEach(b => b.classList.remove('active'));
   containers.forEach(c => c.classList.remove('active'));
   const btn = nav.querySelector(`[data-tab="${tabId}"]`);
