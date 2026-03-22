@@ -5,7 +5,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { trackClick } from "@/lib/analytics";
 
 const RICK_ROLL_GIF = "https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif";
-const BARRY_WOOD_GIF = "https://media.tenor.com/E2dBMfR3figAAAAd/barry-wood-meme.gif";
+// "It's a trap!" Admiral Ackbar — works as a gotcha
+const GOTCHA_GIF = "https://media.giphy.com/media/g01ZnwAUvutuK8GIQn/giphy.gif";
 
 const sections = [
   {
@@ -198,8 +199,8 @@ export default function Home() {
             {conciergePhase === "gotcha" ? (
               <>
                 <img
-                  src={BARRY_WOOD_GIF}
-                  alt="Gotcha"
+                  src={GOTCHA_GIF}
+                  alt="It's a trap!"
                   className="w-full rounded-xl mb-4"
                 />
                 <h3 className="font-display text-xl text-white mb-2">
