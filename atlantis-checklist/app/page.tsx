@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+
+const RICK_ROLL_GIF = "https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif";
+const RICK_ROLL_AUDIO = "https://www.myinstants.com/media/sounds/never-gonna-give-you-up-full-version.mp3";
 
 const sections = [
   {
@@ -41,10 +44,21 @@ const sections = [
 export default function Home() {
   const [showConcierge, setShowConcierge] = useState(false);
   const [conciergePhase, setConciergePhase] = useState<"loading" | "reveal" | "gotcha">("loading");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (showConcierge && conciergePhase === "loading") {
-      const timer = setTimeout(() => setConciergePhase("reveal"), 2200);
+      const timer = setTimeout(() => {
+        setConciergePhase("reveal");
+        // Start audio on the phase transition — the original tap was a user gesture
+        // so iOS allows audio shortly after
+        try {
+          const audio = new Audio(RICK_ROLL_AUDIO);
+          audio.loop = true;
+          audio.play().catch(() => {});
+          audioRef.current = audio;
+        } catch {}
+      }, 2200);
       return () => clearTimeout(timer);
     }
   }, [showConcierge, conciergePhase]);
@@ -54,10 +68,19 @@ export default function Home() {
     setShowConcierge(true);
   };
 
-  const closeConcierge = () => {
+  const closeConcierge = useCallback(() => {
     setShowConcierge(false);
     setConciergePhase("loading");
-  };
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  }, []);
+
+  const goToGotcha = useCallback(() => {
+    setConciergePhase("gotcha");
+    // Don't stop the audio — let it keep playing through the gotcha screen
+  }, []);
 
   return (
     <div className="min-h-screen font-body">
@@ -159,12 +182,17 @@ export default function Home() {
           >
             {conciergePhase === "gotcha" ? (
               <>
-                <div className="text-6xl mb-3">😂</div>
+                {/* Rick is still dancing + audio still playing */}
+                <img
+                  src={RICK_ROLL_GIF}
+                  alt="Still rolling"
+                  className="w-full rounded-xl mb-4"
+                />
                 <h3 className="font-display text-xl text-white mb-2">
                   Really? That gullible?
                 </h3>
                 <p className="text-white/50 text-sm mb-4">
-                  You clicked &ldquo;I deserved that&rdquo; and thought it was over? Come on now...
+                  You clicked &ldquo;I deserved that&rdquo; and thought it was over? Rick is STILL going...
                 </p>
                 <div className="bg-white/5 rounded-xl p-3 mb-4">
                   <p className="text-white/40 text-xs italic">
@@ -209,19 +237,13 @@ export default function Home() {
                 <p className="text-white/50 text-sm mb-4">
                   Never gonna give you up, never gonna let you drown...
                 </p>
-                <div className="rounded-xl overflow-hidden mb-4 aspect-video bg-black">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&loop=1&playlist=dQw4w9WgXcQ&start=0"
-                    title="reef-rolled"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="border-0"
-                  />
-                </div>
+                <img
+                  src={RICK_ROLL_GIF}
+                  alt="Rick Astley dancing"
+                  className="w-full rounded-xl mb-4"
+                />
                 <button
-                  onClick={() => setConciergePhase("gotcha")}
+                  onClick={goToGotcha}
                   className="w-full py-2.5 rounded-xl bg-white/10 text-white/70 text-sm font-medium hover:bg-white/15 transition-colors"
                 >
                   I deserved that 🤣
