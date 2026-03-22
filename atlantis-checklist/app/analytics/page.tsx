@@ -35,27 +35,58 @@ function timeAgo(ts: string): string {
   return `${days}d ago`;
 }
 
+const ADMIN_PIN = "6212";
+const PIN_STORAGE_KEY = "atlantis-admin-pin";
+
 export default function AnalyticsDashboard() {
+  const [authed, setAuthed] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState(false);
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [users, setUsers] = useState<UserSummary[]>([]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"users" | "events" | "stream">("users");
 
+  // Check if already authenticated this session
   useEffect(() => {
-    loadData();
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem(PIN_STORAGE_KEY);
+      if (stored === ADMIN_PIN) {
+        setAuthed(true);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    if (authed) loadData();
+  }, [authed]);
+
+  function handlePin() {
+    if (pinInput === ADMIN_PIN) {
+      sessionStorage.setItem(PIN_STORAGE_KEY, ADMIN_PIN);
+      setAuthed(true);
+      setPinError(false);
+    } else {
+      setPinError(true);
+      setPinInput("");
+    }
+  }
 
   async function loadData() {
     setLoading(true);
     const sb = getSupabase();
     if (!sb) { setLoading(false); return; }
 
+    // Pull 30 days of history
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
     const { data } = await sb
       .from("analytics_events")
       .select("*")
+      .gte("timestamp", thirtyDaysAgo)
       .order("timestamp", { ascending: false })
-      .limit(1000);
+      .limit(5000);
 
     if (data) {
       setEvents(data as AnalyticsEvent[]);
@@ -116,6 +147,40 @@ export default function AnalyticsDashboard() {
     }
     return acc;
   }, {} as Record<string, number>);
+
+  // PIN gate
+  if (!authed) {
+    return (
+      <div className="min-h-screen font-body flex items-center justify-center px-6">
+        <div className="bg-ocean-800 rounded-2xl p-6 max-w-xs w-full border border-white/10 text-center">
+          <div className="text-3xl mb-3">🔒</div>
+          <h3 className="text-white font-display text-lg mb-1">Analytics</h3>
+          <p className="text-white/40 text-xs mb-4">Enter PIN to access</p>
+          <input
+            type="password"
+            inputMode="numeric"
+            maxLength={6}
+            value={pinInput}
+            onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
+            onKeyDown={(e) => e.key === "Enter" && handlePin()}
+            placeholder="PIN"
+            autoFocus
+            className={`w-full bg-white/10 text-white text-center text-2xl tracking-[0.5em] rounded-xl px-3 py-3 placeholder-white/20 outline-none focus:ring-1 ${
+              pinError ? "ring-1 ring-coral focus:ring-coral" : "focus:ring-mint/50"
+            } mb-3`}
+          />
+          {pinError && <p className="text-coral text-xs mb-3">Wrong PIN</p>}
+          <button
+            onClick={handlePin}
+            disabled={!pinInput}
+            className="w-full py-2.5 rounded-xl bg-mint/20 text-mint text-sm font-semibold disabled:opacity-30 hover:bg-mint/30 transition-colors"
+          >
+            Unlock
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen font-body">
