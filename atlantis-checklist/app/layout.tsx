@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "Atlantis Packing List — Charles, Carly & Maeve",
-  description: "Shared family packing list for Atlantis Bahamas",
+  title: "Atlantis Trip — Charly & Ganks",
+  description: "Trip companion app for Atlantis Bahamas",
 };
 
 export const viewport: Viewport = {
@@ -21,7 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="pb-20">{children}</div>
+        <BottomNav />
+      </body>
     </html>
   );
 }
