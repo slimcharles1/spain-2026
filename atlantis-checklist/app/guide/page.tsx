@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { guideSections, mapLocations, MAP_CENTER } from "@/lib/guide-data";
+import { guideSections, mapLocations, getLocationById } from "@/lib/guide-data";
 
-function getDirectionsUrl(lat: number, lng: number, name: string) {
-  // Uses Apple Maps on iOS, Google Maps on Android/desktop
+function getAppleMapsUrl(lat: number, lng: number) {
   return `https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d&t=m`;
 }
 
-function getGoogleDirectionsUrl(lat: number, lng: number) {
+function getGoogleMapsUrl(lat: number, lng: number) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
 }
 
@@ -35,7 +34,6 @@ export default function GuidePage() {
       {/* Map & Directions */}
       <div className="px-4 py-4">
         <div className="bg-ocean-800/60 backdrop-blur rounded-2xl overflow-hidden border border-white/5">
-          {/* Map embed */}
           <div className="aspect-[4/3] w-full">
             <iframe
               width="100%"
@@ -49,10 +47,9 @@ export default function GuidePage() {
             />
           </div>
 
-          {/* Location pills */}
           <div className="p-3">
             <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
-              {mapLocations.map((loc) => (
+              {mapLocations.slice(0, 6).map((loc) => (
                 <button
                   key={loc.id}
                   onClick={() => setSelectedLocation(loc)}
@@ -68,10 +65,9 @@ export default function GuidePage() {
               ))}
             </div>
 
-            {/* Direction buttons for selected location */}
             <div className="flex gap-2 mt-2">
               <a
-                href={getDirectionsUrl(selectedLocation.lat, selectedLocation.lng, selectedLocation.name)}
+                href={getAppleMapsUrl(selectedLocation.lat, selectedLocation.lng)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-mint/15 text-mint text-xs font-semibold hover:bg-mint/25 transition-colors"
@@ -83,7 +79,7 @@ export default function GuidePage() {
                 Apple Maps
               </a>
               <a
-                href={getGoogleDirectionsUrl(selectedLocation.lat, selectedLocation.lng)}
+                href={getGoogleMapsUrl(selectedLocation.lat, selectedLocation.lng)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-sky-400/15 text-sky-400 text-xs font-semibold hover:bg-sky-400/25 transition-colors"
@@ -140,13 +136,45 @@ export default function GuidePage() {
               </button>
 
               {!isCollapsed && (
-                <div className="px-4 pb-4 space-y-2.5">
-                  {section.items.map((item, i) => (
-                    <div key={i} className="flex gap-2.5 text-sm">
-                      <span className="text-mint/60 mt-0.5 flex-shrink-0">•</span>
-                      <span className="text-white/70 leading-relaxed">{item}</span>
-                    </div>
-                  ))}
+                <div className="px-4 pb-4 space-y-3">
+                  {section.items.map((item, i) => {
+                    const loc = item.locationId ? getLocationById(item.locationId) : undefined;
+                    return (
+                      <div key={i}>
+                        <div className="flex gap-2.5 text-sm">
+                          <span className="text-mint/60 mt-0.5 flex-shrink-0">•</span>
+                          <span className="text-white/70 leading-relaxed">{item.text}</span>
+                        </div>
+                        {/* Hours badge and/or directions link */}
+                        {(item.hours || loc) && (
+                          <div className="flex flex-wrap items-center gap-2 ml-5 mt-1.5">
+                            {item.hours && (
+                              <span className="inline-flex items-center gap-1 text-[11px] text-gold/80 bg-gold/10 px-2 py-0.5 rounded-full">
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {item.hours}
+                              </span>
+                            )}
+                            {loc && (
+                              <a
+                                href={getGoogleMapsUrl(loc.lat, loc.lng)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-mint/80 bg-mint/10 px-2 py-0.5 rounded-full hover:bg-mint/20 transition-colors"
+                              >
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Directions to {loc.name}
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
