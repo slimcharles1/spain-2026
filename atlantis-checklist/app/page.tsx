@@ -74,7 +74,7 @@ export default function Home() {
       audio.src = "https://cdn.glitch.me/3d0362db-82e6-40b2-a2e8-e56e38b1b1f0%2Frickroll.mp3";
       audio.loop = true;
       audio.muted = true; // Start muted to satisfy autoplay policy
-      audio.playsInline = true;
+      audio.setAttribute("playsinline", "");
       audio.play().catch(() => {});
       audioRef.current = audio;
     } catch {}
