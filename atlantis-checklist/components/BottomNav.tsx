@@ -6,6 +6,15 @@ import { usePathname } from "next/navigation";
 const tabs = [
   {
     href: "/",
+    label: "Home",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    ),
+  },
+  {
+    href: "/checklist",
     label: "Checklist",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -47,19 +56,19 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-ocean-950/95 backdrop-blur-lg border-t border-white/10">
-      <div className="flex items-center justify-around max-w-lg mx-auto px-2 pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around max-w-lg mx-auto px-1 pb-[env(safe-area-inset-bottom)]">
         {tabs.map((tab) => {
           const active = pathname === tab.href;
           return (
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center gap-0.5 py-2.5 px-3 min-w-[60px] transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-2.5 px-2 min-w-[50px] transition-colors ${
                 active ? "text-mint" : "text-white/40 hover:text-white/60"
               }`}
             >
               {tab.icon}
-              <span className="text-[10px] font-semibold">{tab.label}</span>
+              <span className="text-[9px] font-semibold">{tab.label}</span>
             </Link>
           );
         })}

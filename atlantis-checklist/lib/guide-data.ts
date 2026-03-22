@@ -1,3 +1,24 @@
+export interface MapLocation {
+  id: string;
+  emoji: string;
+  name: string;
+  description: string;
+  lat: number;
+  lng: number;
+}
+
+export const mapLocations: MapLocation[] = [
+  { id: "reef", emoji: "🏨", name: "The Reef", description: "Home base", lat: 25.0847, lng: -77.3227 },
+  { id: "aquaventure", emoji: "🎢", name: "Aquaventure", description: "Waterpark", lat: 25.0862, lng: -77.3233 },
+  { id: "marina-village", emoji: "🛍️", name: "Marina Village", description: "Shops & restaurants", lat: 25.0856, lng: -77.3262 },
+  { id: "royal-towers", emoji: "🏛️", name: "Royal Towers", description: "Casino & lobby", lat: 25.0868, lng: -77.3244 },
+  { id: "nobu", emoji: "🍣", name: "Nobu", description: "Restaurant", lat: 25.0863, lng: -77.3251 },
+  { id: "nassau", emoji: "🏙️", name: "Nassau Town", description: "Downtown", lat: 25.0480, lng: -77.3554 },
+];
+
+// Center point for the embedded map (The Reef at Atlantis)
+export const MAP_CENTER = { lat: 25.0855, lng: -77.3240 };
+
 export interface GuideSection {
   id: string;
   emoji: string;

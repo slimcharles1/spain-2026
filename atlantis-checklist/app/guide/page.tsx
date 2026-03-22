@@ -1,39 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { guideSections } from "@/lib/guide-data";
+import { guideSections, mapLocations, MAP_CENTER } from "@/lib/guide-data";
+
+function getDirectionsUrl(lat: number, lng: number, name: string) {
+  // Uses Apple Maps on iOS, Google Maps on Android/desktop
+  return `https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d&t=m`;
+}
+
+function getGoogleDirectionsUrl(lat: number, lng: number) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
+}
 
 export default function GuidePage() {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [tapCount, setTapCount] = useState(0);
-  const [lastTap, setLastTap] = useState(0);
-  const [showRickRoll, setShowRickRoll] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(mapLocations[0]);
 
-  const handleTitleTap = () => {
-    const now = Date.now();
-    if (now - lastTap < 500) {
-      const next = tapCount + 1;
-      setTapCount(next);
-      if (next >= 5) {
-        setShowRickRoll(true);
-        setTapCount(0);
-      }
-    } else {
-      setTapCount(1);
-    }
-    setLastTap(now);
-  };
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${selectedLocation.lat},${selectedLocation.lng}&z=16&output=embed`;
 
   return (
     <div className="min-h-screen font-body">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-gradient-to-b from-ocean-950 to-ocean-900 pb-4 shadow-lg shadow-ocean-950/50">
         <div className="px-5 pt-10 pb-2 text-center">
-          <h1
-            onClick={handleTitleTap}
-            className="font-display text-3xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent cursor-default select-none"
-          >
-            Atlantis Guide
+          <h1 className="font-display text-3xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent">
+            Guide &amp; Map
           </h1>
           <p className="text-white/50 text-sm mt-1 tracking-wide">
             Tips for The Reef — with toddlers in tow
@@ -41,8 +32,74 @@ export default function GuidePage() {
         </div>
       </div>
 
-      {/* Sections */}
-      <div className="px-4 py-4 space-y-3">
+      {/* Map & Directions */}
+      <div className="px-4 py-4">
+        <div className="bg-ocean-800/60 backdrop-blur rounded-2xl overflow-hidden border border-white/5">
+          {/* Map embed */}
+          <div className="aspect-[4/3] w-full">
+            <iframe
+              width="100%"
+              height="100%"
+              src={mapEmbedUrl}
+              title="Atlantis Resort Map"
+              className="border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+
+          {/* Location pills */}
+          <div className="p-3">
+            <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+              {mapLocations.map((loc) => (
+                <button
+                  key={loc.id}
+                  onClick={() => setSelectedLocation(loc)}
+                  className={`flex-shrink-0 flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium transition-all ${
+                    selectedLocation.id === loc.id
+                      ? "bg-white/15 text-white ring-1 ring-mint/40"
+                      : "bg-white/5 text-white/40 hover:bg-white/10"
+                  }`}
+                >
+                  <span>{loc.emoji}</span>
+                  <span>{loc.name}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Direction buttons for selected location */}
+            <div className="flex gap-2 mt-2">
+              <a
+                href={getDirectionsUrl(selectedLocation.lat, selectedLocation.lng, selectedLocation.name)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-mint/15 text-mint text-xs font-semibold hover:bg-mint/25 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Apple Maps
+              </a>
+              <a
+                href={getGoogleDirectionsUrl(selectedLocation.lat, selectedLocation.lng)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-sky-400/15 text-sky-400 text-xs font-semibold hover:bg-sky-400/25 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Guide Sections */}
+      <div className="px-4 pb-4 space-y-3">
         {guideSections.map((section) => {
           const isCollapsed = collapsed[section.id] ?? false;
           return (
@@ -85,14 +142,9 @@ export default function GuidePage() {
               {!isCollapsed && (
                 <div className="px-4 pb-4 space-y-2.5">
                   {section.items.map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex gap-2.5 text-sm"
-                    >
+                    <div key={i} className="flex gap-2.5 text-sm">
                       <span className="text-mint/60 mt-0.5 flex-shrink-0">•</span>
-                      <span className="text-white/70 leading-relaxed">
-                        {item}
-                      </span>
+                      <span className="text-white/70 leading-relaxed">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -107,44 +159,6 @@ export default function GuidePage() {
           Have a great trip, Charly &amp; Ganks! 🌊
         </p>
       </div>
-
-      {/* Rick Roll Easter Egg */}
-      {showRickRoll && (
-        <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md px-6"
-          onClick={() => setShowRickRoll(false)}
-        >
-          <div
-            className="bg-ocean-800 rounded-2xl p-5 max-w-sm w-full border border-white/10 text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-5xl mb-3">🐟</div>
-            <h3 className="font-display text-xl text-white mb-1">
-              You&apos;ve been reef-rolled!
-            </h3>
-            <p className="text-white/50 text-sm mb-4">
-              Never gonna give you up, never gonna let you drown...
-            </p>
-            <div className="rounded-xl overflow-hidden mb-4 aspect-video bg-black">
-              <iframe
-                width="100%"
-                height="100%"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&start=0"
-                title="reef-rolled"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="border-0"
-              />
-            </div>
-            <button
-              onClick={() => setShowRickRoll(false)}
-              className="w-full py-2.5 rounded-xl bg-white/10 text-white/70 text-sm font-medium hover:bg-white/15 transition-colors"
-            >
-              I deserved that 🤣
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
