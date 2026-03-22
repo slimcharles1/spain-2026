@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 interface ScheduleEvent {
   id: string;
@@ -161,6 +162,7 @@ export default function SchedulePage() {
         created_at: new Date().toISOString(),
       };
       setEvents((prev) => [...prev, newEvent]);
+      trackEvent("schedule_event_added", { title: title.trim(), type, date: selectedDay });
     }
 
     setShowForm(false);

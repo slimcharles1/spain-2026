@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { trackClick, trackEvent } from "@/lib/analytics";
 
 interface Expense {
   id: string;
@@ -92,6 +93,7 @@ export default function ExpensesPage() {
     };
 
     setExpenses((prev) => [expense, ...prev]);
+    trackEvent("expense_added", { amount: amt, category, paid_by: paidBy, split });
     resetForm();
   }, [amount, description, category, paidBy, split, photoUrl]);
 

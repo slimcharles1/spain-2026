@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { guideSections, mapLocations, getLocationById } from "@/lib/guide-data";
+import { trackClick } from "@/lib/analytics";
 
 function getAppleMapsUrl(lat: number, lng: number) {
   return `https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d&t=m`;
@@ -161,6 +162,7 @@ export default function GuidePage() {
                                 href={getAppleMapsUrl(loc.lat, loc.lng)}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={() => trackClick("directions", { location: loc.name })}
                                 className="inline-flex items-center gap-1 text-[11px] text-mint/80 bg-mint/10 px-2 py-0.5 rounded-full hover:bg-mint/20 transition-colors"
                               >
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import AnalyticsProvider from "@/components/AnalyticsProvider";
 
 export const metadata: Metadata = {
   title: "Atlantis Trip — Charly & Ganks",
@@ -23,8 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="pb-20">{children}</div>
-        <BottomNav />
+        <AnalyticsProvider>
+          <div className="pb-20">{children}</div>
+          <BottomNav />
+        </AnalyticsProvider>
       </body>
     </html>
   );

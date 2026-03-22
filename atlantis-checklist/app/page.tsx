@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { trackClick } from "@/lib/analytics";
 
 const RICK_ROLL_GIF = "https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif";
+const BARRY_WOOD_GIF = "https://media.tenor.com/E2dBMfR3figAAAAd/barry-wood-meme.gif";
 
 const sections = [
   {
@@ -62,6 +64,7 @@ export default function Home() {
   }, [conciergePhase]);
 
   const openConcierge = () => {
+    trackClick("concierge_button");
     setConciergePhase("loading");
     setShowConcierge(true);
 
@@ -70,8 +73,8 @@ export default function Home() {
     // then unmute when the reveal phase kicks in.
     try {
       const audio = document.createElement("audio");
-      // Use a rick roll audio from a CORS-friendly CDN
-      audio.src = "https://cdn.glitch.me/3d0362db-82e6-40b2-a2e8-e56e38b1b1f0%2Frickroll.mp3";
+      // Local file — no CORS issues
+      audio.src = "/rickroll.mp3";
       audio.loop = true;
       audio.muted = true; // Start muted to satisfy autoplay policy
       audio.setAttribute("playsinline", "");
@@ -179,7 +182,7 @@ export default function Home() {
       </div>
 
       <p className="text-white/10 text-xs text-center pb-4">
-        Built by Negative Space LLC
+        built by negative space llc
       </p>
 
       {/* Concierge / Rick Roll modal */}
@@ -195,15 +198,15 @@ export default function Home() {
             {conciergePhase === "gotcha" ? (
               <>
                 <img
-                  src={RICK_ROLL_GIF}
-                  alt="Still rolling"
+                  src={BARRY_WOOD_GIF}
+                  alt="Gotcha"
                   className="w-full rounded-xl mb-4"
                 />
                 <h3 className="font-display text-xl text-white mb-2">
                   Really? That gullible?
                 </h3>
                 <p className="text-white/50 text-sm mb-4">
-                  You clicked &ldquo;I deserved that&rdquo; and thought it was over? Rick is STILL going...
+                  You clicked &ldquo;I deserved that&rdquo; and thought it was over? 💀
                 </p>
                 <div className="bg-white/5 rounded-xl p-3 mb-4">
                   <p className="text-white/40 text-xs italic">
