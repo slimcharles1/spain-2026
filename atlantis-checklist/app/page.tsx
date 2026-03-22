@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const RICK_ROLL_GIF = "https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif";
-const RICK_ROLL_AUDIO = "https://www.myinstants.com/media/sounds/never-gonna-give-you-up-full-version.mp3";
 
 const sections = [
   {
@@ -46,26 +45,39 @@ export default function Home() {
   const [conciergePhase, setConciergePhase] = useState<"loading" | "reveal" | "gotcha">("loading");
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Transition from loading to reveal after delay
   useEffect(() => {
     if (showConcierge && conciergePhase === "loading") {
-      const timer = setTimeout(() => {
-        setConciergePhase("reveal");
-        // Start audio on the phase transition — the original tap was a user gesture
-        // so iOS allows audio shortly after
-        try {
-          const audio = new Audio(RICK_ROLL_AUDIO);
-          audio.loop = true;
-          audio.play().catch(() => {});
-          audioRef.current = audio;
-        } catch {}
-      }, 2200);
+      const timer = setTimeout(() => setConciergePhase("reveal"), 2200);
       return () => clearTimeout(timer);
     }
   }, [showConcierge, conciergePhase]);
 
+  // When reveal phase starts, unmute the audio
+  useEffect(() => {
+    if (conciergePhase === "reveal" && audioRef.current) {
+      audioRef.current.muted = false;
+      audioRef.current.volume = 1;
+    }
+  }, [conciergePhase]);
+
   const openConcierge = () => {
     setConciergePhase("loading");
     setShowConcierge(true);
+
+    // iOS requires audio.play() in the SAME synchronous call stack as the user gesture.
+    // Start playing immediately (muted) so iOS unlocks the audio context,
+    // then unmute when the reveal phase kicks in.
+    try {
+      const audio = document.createElement("audio");
+      // Use a rick roll audio from a CORS-friendly CDN
+      audio.src = "https://cdn.glitch.me/3d0362db-82e6-40b2-a2e8-e56e38b1b1f0%2Frickroll.mp3";
+      audio.loop = true;
+      audio.muted = true; // Start muted to satisfy autoplay policy
+      audio.playsInline = true;
+      audio.play().catch(() => {});
+      audioRef.current = audio;
+    } catch {}
   };
 
   const closeConcierge = useCallback(() => {
@@ -73,13 +85,13 @@ export default function Home() {
     setConciergePhase("loading");
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.src = "";
       audioRef.current = null;
     }
   }, []);
 
   const goToGotcha = useCallback(() => {
     setConciergePhase("gotcha");
-    // Don't stop the audio — let it keep playing through the gotcha screen
   }, []);
 
   return (
@@ -167,7 +179,7 @@ export default function Home() {
       </div>
 
       <p className="text-white/10 text-xs text-center pb-4">
-        Have an amazing trip! 🏝️
+        Built by Negative Space LLC
       </p>
 
       {/* Concierge / Rick Roll modal */}
@@ -182,7 +194,6 @@ export default function Home() {
           >
             {conciergePhase === "gotcha" ? (
               <>
-                {/* Rick is still dancing + audio still playing */}
                 <img
                   src={RICK_ROLL_GIF}
                   alt="Still rolling"
