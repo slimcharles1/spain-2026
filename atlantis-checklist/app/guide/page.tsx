@@ -158,7 +158,7 @@ export default function GuidePage() {
                             )}
                             {loc && (
                               <a
-                                href={getGoogleMapsUrl(loc.lat, loc.lng)}
+                                href={getAppleMapsUrl(loc.lat, loc.lng)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 text-[11px] text-mint/80 bg-mint/10 px-2 py-0.5 rounded-full hover:bg-mint/20 transition-colors"
