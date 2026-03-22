@@ -40,7 +40,7 @@ const sections = [
 
 export default function Home() {
   const [showConcierge, setShowConcierge] = useState(false);
-  const [conciergePhase, setConciergePhase] = useState<"loading" | "reveal">("loading");
+  const [conciergePhase, setConciergePhase] = useState<"loading" | "reveal" | "gotcha">("loading");
 
   useEffect(() => {
     if (showConcierge && conciergePhase === "loading") {
@@ -157,7 +157,31 @@ export default function Home() {
             className="bg-ocean-800 rounded-2xl p-5 max-w-sm w-full border border-white/10 text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {conciergePhase === "loading" ? (
+            {conciergePhase === "gotcha" ? (
+              <>
+                <div className="text-6xl mb-3">😂</div>
+                <h3 className="font-display text-xl text-white mb-2">
+                  Really? That gullible?
+                </h3>
+                <p className="text-white/50 text-sm mb-4">
+                  You clicked &ldquo;I deserved that&rdquo; and thought it was over? Come on now...
+                </p>
+                <div className="bg-white/5 rounded-xl p-3 mb-4">
+                  <p className="text-white/40 text-xs italic">
+                    &ldquo;The concierge desk is currently closed. Please try again never.&rdquo;
+                  </p>
+                  <p className="text-white/20 text-[10px] mt-2">
+                    — Atlantis Management (not really)
+                  </p>
+                </div>
+                <button
+                  onClick={closeConcierge}
+                  className="w-full py-2.5 rounded-xl bg-coral/20 text-coral text-sm font-medium hover:bg-coral/30 transition-colors"
+                >
+                  OK I&apos;m done 💀
+                </button>
+              </>
+            ) : conciergePhase === "loading" ? (
               <>
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -197,7 +221,7 @@ export default function Home() {
                   />
                 </div>
                 <button
-                  onClick={closeConcierge}
+                  onClick={() => setConciergePhase("gotcha")}
                   className="w-full py-2.5 rounded-xl bg-white/10 text-white/70 text-sm font-medium hover:bg-white/15 transition-colors"
                 >
                   I deserved that 🤣
