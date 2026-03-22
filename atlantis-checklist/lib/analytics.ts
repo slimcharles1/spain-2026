@@ -5,6 +5,7 @@ import { getSupabase } from "./supabase";
 const USER_ID_KEY = "atlantis-user-id";
 const USER_NAME_KEY = "atlantis-user-name";
 const EVENTS_KEY = "atlantis-analytics-events";
+const IP_KEY = "atlantis-user-ip";
 
 export function getUserId(): string {
   if (typeof window === "undefined") return "server";
@@ -27,6 +28,31 @@ export function setUserName(name: string) {
   trackEvent("user_identified", { name });
 }
 
+// ─── IP + Device ───
+
+let cachedIp: string | null = null;
+
+export async function fetchIp(): Promise<string> {
+  if (cachedIp) return cachedIp;
+  if (typeof window === "undefined") return "server";
+  try {
+    const stored = localStorage.getItem(IP_KEY);
+    if (stored) { cachedIp = stored; return stored; }
+    const res = await fetch("/api/ip");
+    const data = await res.json();
+    cachedIp = data.ip || "unknown";
+    localStorage.setItem(IP_KEY, cachedIp!);
+    return cachedIp!;
+  } catch {
+    return "unknown";
+  }
+}
+
+export function getDeviceInfo(): string {
+  if (typeof window === "undefined") return "server";
+  return navigator.userAgent;
+}
+
 // ─── Event tracking ───
 
 export interface AnalyticsEvent {
@@ -39,34 +65,28 @@ export interface AnalyticsEvent {
   metadata: Record<string, string | number | boolean> | null;
   timestamp: string;
   session_id: string;
+  ip_address: string | null;
+  device_info: string | null;
 }
 
-// Session ID — new per browser tab/reload
 let sessionId: string | null = null;
 function getSessionId(): string {
-  if (!sessionId) {
-    sessionId = crypto.randomUUID().slice(0, 8);
-  }
+  if (!sessionId) sessionId = crypto.randomUUID().slice(0, 8);
   return sessionId;
 }
 
 function getStoredEvents(): AnalyticsEvent[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(EVENTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+    return JSON.parse(localStorage.getItem(EVENTS_KEY) || "[]");
+  } catch { return []; }
 }
 
 function storeEvent(event: AnalyticsEvent) {
   if (typeof window === "undefined") return;
   const events = getStoredEvents();
   events.push(event);
-  // Keep last 500 events locally
-  const trimmed = events.slice(-500);
-  localStorage.setItem(EVENTS_KEY, JSON.stringify(trimmed));
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(events.slice(-500)));
 }
 
 export function trackEvent(
@@ -86,33 +106,36 @@ export function trackEvent(
     metadata: metadata ?? null,
     timestamp: new Date().toISOString(),
     session_id: getSessionId(),
+    ip_address: cachedIp,
+    device_info: getDeviceInfo(),
   };
 
-  // Store locally
   storeEvent(event);
 
-  // Sync to Supabase if available
   const sb = getSupabase();
   if (sb) {
-    sb.from("analytics_events")
-      .insert(event)
-      .then(() => {});
+    // If we don't have IP yet, fetch it and update
+    if (!cachedIp) {
+      fetchIp().then((ip) => {
+        sb.from("analytics_events").insert({ ...event, ip_address: ip }).then(() => {});
+      });
+    } else {
+      sb.from("analytics_events").insert(event).then(() => {});
+    }
   }
 }
 
-// ─── Page view tracking ───
+// ─── Convenience ───
 
 export function trackPageView(page: string) {
   trackEvent("page_view", { path: page });
 }
 
-// ─── Click tracking ───
-
 export function trackClick(target: string, metadata?: Record<string, string | number | boolean>) {
   trackEvent("click", metadata, target);
 }
 
-// ─── Get all events (for analytics dashboard) ───
+// ─── Data access ───
 
 export function getAllEvents(): AnalyticsEvent[] {
   return getStoredEvents();
@@ -132,4 +155,23 @@ export function getEventsByUser(): Record<string, AnalyticsEvent[]> {
 export function clearEvents() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(EVENTS_KEY);
+}
+
+// ─── CSV export ───
+
+export function eventsToCSV(events: AnalyticsEvent[]): string {
+  const headers = ["timestamp", "user_name", "user_id", "session_id", "event_type", "page", "target", "ip_address", "device_info", "metadata"];
+  const rows = events.map((e) => [
+    e.timestamp,
+    e.user_name || "",
+    e.user_id,
+    e.session_id,
+    e.event_type,
+    e.page,
+    e.target || "",
+    e.ip_address || "",
+    (e.device_info || "").replace(/,/g, ";"),
+    e.metadata ? JSON.stringify(e.metadata) : "",
+  ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","));
+  return [headers.join(","), ...rows].join("\n");
 }

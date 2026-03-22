@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { trackPageView, getUserId, getUserName, setUserName } from "@/lib/analytics";
+import { trackPageView, getUserId, getUserName, setUserName, fetchIp } from "@/lib/analytics";
 
 export default function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,9 +32,10 @@ export default function AnalyticsProvider({ children }: { children: React.ReactN
     }
   };
 
-  // Force user ID generation on mount
+  // Force user ID + IP fetch on mount
   useEffect(() => {
     getUserId();
+    fetchIp();
   }, []);
 
   return (
