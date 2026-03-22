@@ -100,9 +100,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen font-body">
-      {/* Hero */}
-      <div className="px-5 pt-14 pb-6 text-center">
-        <div className="text-5xl mb-4">🌊</div>
+      {/* Hero image */}
+      <div className="relative h-44 overflow-hidden">
+        <img src="/headers/home.jpg" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ocean-950/40 via-ocean-950/20 to-ocean-950" />
+      </div>
+
+      {/* Hero text */}
+      <div className="px-5 -mt-8 pb-6 text-center relative z-10">
         <h1 className="font-display text-4xl sm:text-5xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent leading-tight">
           Atlantis Bahamas
         </h1>

@@ -22,13 +22,17 @@ export default function GuidePage() {
     <div className="min-h-screen font-body">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-gradient-to-b from-ocean-950 to-ocean-900 pb-4 shadow-lg shadow-ocean-950/50">
-        <div className="px-5 pt-10 pb-2 text-center">
-          <h1 className="font-display text-3xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent">
-            Guide &amp; Map
-          </h1>
-          <p className="text-white/50 text-sm mt-1 tracking-wide">
-            Tips for The Reef — with toddlers in tow
-          </p>
+        <div className="relative h-28 overflow-hidden">
+          <img src="/headers/guide.jpg" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ocean-950/30 to-ocean-950/90" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <h1 className="font-display text-2xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent">
+              Guide &amp; Map
+            </h1>
+            <p className="text-white/60 text-xs mt-0.5 tracking-wide">
+              Tips for The Reef — with toddlers in tow
+            </p>
+          </div>
         </div>
       </div>
 

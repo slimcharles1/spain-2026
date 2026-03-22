@@ -155,13 +155,17 @@ export default function ExpensesPage() {
   return (
     <div className="min-h-screen font-body">
       <div className="sticky top-0 z-40 bg-gradient-to-b from-ocean-950 to-ocean-900 pb-4 shadow-lg shadow-ocean-950/50">
-        <div className="px-5 pt-10 pb-2 text-center">
-          <h1 className="font-display text-3xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent">
-            Master Tab
-          </h1>
-          <p className="text-white/50 text-sm mt-1 tracking-wide">
-            Charly &amp; Ganks {useDb && <span className="text-mint/50">· synced</span>}
-          </p>
+        <div className="relative h-28 overflow-hidden">
+          <img src="/headers/expenses.jpg" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ocean-950/30 to-ocean-950/90" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <h1 className="font-display text-2xl bg-gradient-to-r from-gold via-coral to-pink bg-clip-text text-transparent">
+              Master Tab
+            </h1>
+            <p className="text-white/60 text-xs mt-0.5 tracking-wide">
+              Charly &amp; Ganks {useDb && <span className="text-mint/50">· synced</span>}
+            </p>
+          </div>
         </div>
 
         <div className="mx-5 mt-3 bg-ocean-800/80 rounded-2xl p-4 border border-white/5">
