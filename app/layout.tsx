@@ -3,6 +3,7 @@ import { DM_Serif_Display, DM_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import ThemeProvider from "@/components/ThemeProvider";
+import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 
 const dmSerif = DM_Serif_Display({
   weight: "400",
@@ -54,6 +55,7 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
+          <ServiceWorkerRegistrar />
           <div className="pb-20">{children}</div>
           <BottomNav />
         </ThemeProvider>

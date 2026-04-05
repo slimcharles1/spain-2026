@@ -112,9 +112,10 @@ export default function BookingsPage() {
     });
   }, []);
 
-  // Progress calculation
-  const totalItems = bookingItems.length;
-  const checkedCount = bookingItems.filter((b) => bookings[b.id]?.checked).length;
+  // Progress calculation — only count bookable items (exclude walk-ins)
+  const bookableItems = bookingItems.filter((b) => b.tier !== "no-booking");
+  const totalItems = bookableItems.length;
+  const checkedCount = bookableItems.filter((b) => bookings[b.id]?.checked).length;
   const allComplete = checkedCount === totalItems;
 
   // Group items by tier, with completed tiers at bottom

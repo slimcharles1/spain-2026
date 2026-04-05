@@ -69,6 +69,7 @@ export const tripDays: TripDay[] = [
         location: { name: "URSO Hotel & Spa", address: "Calle de Mejía Lequerica, 8, 28004 Madrid", lat: 40.4264, lng: -3.6987 },
         type: "hotel",
         durationMinutes: 60,
+        confirmation: "9086280313578",
       },
       {
         id: "d1-breakfast",
@@ -232,6 +233,7 @@ export const tripDays: TripDay[] = [
         location: { name: "Hotel Colón Gran Meliá", address: "Canalejas, 1, 41001 Sevilla", lat: 37.3886, lng: -5.9953 },
         type: "hotel",
         durationMinutes: 45,
+        confirmation: "9086785389099",
       },
       {
         id: "d2-lunch",
@@ -658,6 +660,7 @@ export const tripDays: TripDay[] = [
         location: { name: "Gran Hotel Inglés", address: "Calle de Echegaray, 8, 28014 Madrid", lat: 40.4155, lng: -3.6985 },
         type: "hotel",
         durationMinutes: 90,
+        confirmation: "9100117664541",
       },
       {
         id: "d5-dinner",

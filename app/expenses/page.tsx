@@ -70,6 +70,7 @@ export default function ExpensesPage() {
   const [category, setCategory] = useState("dining");
   const [paidBy, setPaidBy] = useState<"cc" | "ta">("cc");
   const [split, setSplit] = useState<"50-50" | "cc-only" | "ta-only">("50-50");
+  const [descriptionError, setDescriptionError] = useState(false);
 
   useEffect(() => {
     setExpenses(loadExpenses());
@@ -111,7 +112,10 @@ export default function ExpensesPage() {
 
   const addExpense = useCallback(() => {
     const amt = parseFloat(amount);
-    if (!amt || amt <= 0 || !description.trim()) return;
+    if (!amt || amt <= 0 || !description.trim()) {
+      if (!description.trim()) setDescriptionError(true);
+      return;
+    }
 
     const expense: Expense = {
       id: crypto.randomUUID(),
@@ -311,12 +315,15 @@ export default function ExpensesPage() {
               <input
                 type="text"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  if (descriptionError) setDescriptionError(false);
+                }}
                 placeholder="What was it for?"
-                className="w-full px-4 py-3 rounded-xl text-[15px]"
+                className={`w-full px-4 py-3 rounded-xl text-[15px]${descriptionError ? " animate-shake" : ""}`}
                 style={{
                   background: "var(--theme-card)",
-                  border: "1px solid var(--theme-border)",
+                  border: descriptionError ? "1.5px solid #C0392B" : "1px solid var(--theme-border)",
                   color: "var(--theme-text)",
                 }}
               />

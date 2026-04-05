@@ -35,16 +35,18 @@ export default function Home() {
     ? getNowAndNext(dayNum)
     : { now: null, next: null, minutesUntilNext: null, minutesIntoNow: null, nowDurationMinutes: null };
 
-  // Booking progress
+  // Booking progress — only count bookable items (exclude walk-ins)
+  const bookableItems = bookingItems.filter((b) => b.tier !== "no-booking");
   const [bookedCount, setBookedCount] = useState(0);
   useEffect(() => {
     const stored = localStorage.getItem("spain-bookings");
     const state = stored ? JSON.parse(stored) : {};
-    setBookedCount(bookingItems.filter((b) => state[b.id]?.checked).length);
+    const bookable = bookingItems.filter((b) => b.tier !== "no-booking");
+    setBookedCount(bookable.filter((b) => state[b.id]?.checked).length);
   }, []);
 
   return (
-    <div className="min-h-screen animate-fade-in">
+    <div className="min-h-screen animate-fade-in azulejo-bg">
       {/* Gear icon for info */}
       <button
         onClick={() => setShowInfo(true)}
@@ -61,7 +63,7 @@ export default function Home() {
       {/* Tony Birthday Modal */}
       <TonyBirthdayModal />
 
-      {phase === "pre" && <PreTripView bookedCount={bookedCount} totalBookings={bookingItems.length} />}
+      {phase === "pre" && <PreTripView bookedCount={bookedCount} totalBookings={bookableItems.length} />}
       {phase === "during" && (
         <DuringTripView
           day={day}
@@ -73,6 +75,7 @@ export default function Home() {
           minutesUntilNext={minutesUntilNext}
           minutesIntoNow={minutesIntoNow}
           nowDurationMinutes={nowDurationMinutes}
+          spainTime={spainTime}
         />
       )}
       {phase === "post" && <PostTripView />}
@@ -115,32 +118,30 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
         </div>
       </div>
 
-      {/* Countdown */}
+      {/* Countdown — horseshoe arch silhouette */}
       <div className="text-center mb-8">
         <div
-          className="inline-flex items-center justify-center w-28 h-28 rounded-full"
-          style={{ border: "3px solid var(--theme-border)" }}
+          className="inline-flex flex-col items-center justify-center w-32 h-36 relative"
+          style={{
+            background: "linear-gradient(180deg, rgba(192, 57, 43, 0.06) 0%, transparent 60%)",
+            borderRadius: "50% 50% 16px 16px / 60% 60% 16px 16px",
+            border: "2px solid rgba(192, 57, 43, 0.12)",
+            borderBottom: "2px solid rgba(212, 168, 67, 0.15)",
+          }}
         >
-          <div>
-            <span className="text-[36px] font-bold block" style={{ color: "var(--theme-text)", fontFamily: "var(--font-mono)" }}>
-              {days}
-            </span>
-            <span className="text-[11px] tracking-wider uppercase" style={{ color: "var(--theme-text-secondary)" }}>
-              days to go
-            </span>
-          </div>
+          <span className="text-[36px] font-bold block" style={{ color: "var(--theme-text)", fontFamily: "var(--font-mono)" }}>
+            {days}
+          </span>
+          <span className="text-[11px] tracking-wider uppercase" style={{ color: "var(--theme-text-secondary)" }}>
+            days to go
+          </span>
         </div>
       </div>
 
       {/* Booking progress */}
       <Link
         href="/bookings"
-        className="block p-4 rounded-2xl mb-4 active:scale-[0.98] transition-transform"
-        style={{
-          background: "var(--theme-card)",
-          border: "1px solid var(--theme-border)",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-        }}
+        className="block p-4 mb-4 active:scale-[0.98] transition-transform card-featured"
       >
         <div className="flex items-center justify-between">
           <span className="text-[14px] font-semibold" style={{ color: "var(--theme-text)" }}>
@@ -161,6 +162,8 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
         </div>
       </Link>
 
+      <div className="divider-spanish"><div className="divider-spanish-dot" /></div>
+
       {/* Section cards */}
       <div className="space-y-3 mb-8">
         {[
@@ -170,12 +173,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
           <Link
             key={s.href}
             href={s.href}
-            className="flex items-center gap-3.5 p-4 rounded-2xl active:scale-[0.98] transition-transform"
-            style={{
-              background: "var(--theme-card)",
-              border: "1px solid var(--theme-border)",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-            }}
+            className="flex items-center gap-3.5 p-4 active:scale-[0.98] transition-transform card-spanish"
           >
             <span className="text-2xl">{s.emoji}</span>
             <div className="flex-1">
@@ -191,7 +189,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
 
       {/* Trip at a Glance */}
       <div className="mb-8">
-        <h2 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+        <h2 className="section-masthead mb-3">
           The Week Ahead
         </h2>
         <div className="space-y-2">
@@ -199,11 +197,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
             <Link
               key={day.dayNumber}
               href={`/schedule?day=${day.dayNumber}`}
-              className="flex items-center gap-3 p-3 rounded-xl active:scale-[0.98] transition-transform"
-              style={{
-                background: "var(--theme-card)",
-                border: "1px solid var(--theme-border)",
-              }}
+              className="flex items-center gap-3 p-3 active:scale-[0.98] transition-transform stagger-item card-spanish"
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0"
@@ -231,7 +225,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
 
       {/* Weather */}
       <div className="mb-8">
-        <h2 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+        <h2 className="section-masthead mb-3">
           May Weather
         </h2>
         <div className="flex gap-3">
@@ -267,7 +261,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
 
       {/* Hotels */}
       <div className="mb-8">
-        <h2 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+        <h2 className="section-masthead mb-3">
           Where You&apos;re Staying
         </h2>
         <div className="space-y-2">
@@ -300,7 +294,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
 
       {/* Quick Phrases */}
       <div className="mb-8">
-        <h2 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+        <h2 className="section-masthead mb-3">
           Spanish Essentials
         </h2>
         <div
@@ -331,7 +325,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
 
       {/* Key Tips */}
       <div className="mb-8">
-        <h2 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+        <h2 className="section-masthead mb-3">
           Know Before You Go
         </h2>
         <div className="space-y-2">
@@ -367,7 +361,7 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
 }
 
 function DuringTripView({
-  day, dayNum, city, hotel, nowEvent, nextEvent, minutesUntilNext, minutesIntoNow, nowDurationMinutes,
+  day, dayNum, city, hotel, nowEvent, nextEvent, minutesUntilNext, minutesIntoNow, nowDurationMinutes, spainTime,
 }: {
   day: (typeof tripDays)[0] | null | undefined;
   dayNum: number | null;
@@ -378,6 +372,7 @@ function DuringTripView({
   minutesUntilNext: number | null;
   minutesIntoNow: number | null;
   nowDurationMinutes: number | null;
+  spainTime: string;
 }) {
   return (
     <div className="px-5 pt-12 pb-8">
@@ -403,6 +398,16 @@ function DuringTripView({
           <p className="text-[13px] text-white/60 mt-1">
             {day?.weekday}, {day?.date.split("-").reverse().join("/")}
           </p>
+          {spainTime && (
+            <p className="text-[12px] text-white/40 mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+              Spain time: {(() => {
+                const [h, m] = spainTime.split(":").map(Number);
+                const ampm = h >= 12 ? "PM" : "AM";
+                const hour = h % 12 || 12;
+                return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+              })()}
+            </p>
+          )}
           {hotel && (
             <div className="flex items-center gap-2 mt-3">
               <span className="text-[12px] text-white/50">🏨</span>
@@ -493,7 +498,7 @@ function DuringTripView({
       {/* Today's remaining */}
       {day && (
         <div className="mt-4">
-          <h2 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+          <h2 className="section-masthead mb-3">
             Today&apos;s Schedule
           </h2>
           <Link href="/schedule" className="space-y-1 block">

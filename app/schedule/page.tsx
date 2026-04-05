@@ -99,6 +99,16 @@ function ScheduleContent() {
         <p className="text-[13px] mt-1" style={{ color: "var(--theme-text-secondary, #666)" }}>
           {new Date(day.date + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} · {day.city}
         </p>
+        {spainTime && (
+          <p className="text-[12px] mt-0.5" style={{ color: "var(--theme-text-secondary, #999)", fontFamily: "var(--font-mono)" }}>
+            Spain time: {(() => {
+              const [h, m] = spainTime.split(":").map(Number);
+              const ampm = h >= 12 ? "PM" : "AM";
+              const hour = h % 12 || 12;
+              return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+            })()}
+          </p>
+        )}
         {selectedDay === 2 && (
           <p className="text-[12px] mt-1 font-semibold" style={{ color: "var(--theme-accent-secondary)" }}>
             🎂 Tony&apos;s Birthday + Match Day

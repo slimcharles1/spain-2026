@@ -65,10 +65,13 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t"
+      className="fixed bottom-0 left-0 right-0 z-50"
       style={{
-        background: "var(--theme-nav-bg)",
-        borderColor: "var(--theme-border)",
+        background: "linear-gradient(180deg, rgba(255, 252, 245, 0.85) 0%, rgba(255, 252, 245, 0.98) 100%)",
+        backdropFilter: "blur(20px) saturate(1.4)",
+        WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+        borderTop: "1px solid rgba(212, 168, 67, 0.15)",
+        boxShadow: "0 -4px 20px rgba(27, 42, 74, 0.04)",
       }}
     >
       <div className="flex items-center justify-around max-w-lg mx-auto px-1" style={{ paddingBottom: "env(safe-area-inset-bottom)", height: "calc(64px + env(safe-area-inset-bottom))" }}>
@@ -78,16 +81,27 @@ export default function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex flex-col items-center justify-center gap-0.5 py-2.5 w-[72px] transition-all duration-150"
+              className="relative flex flex-col items-center justify-center gap-0.5 py-2.5 w-[72px] transition-all duration-150"
               style={{
                 color: active ? "var(--theme-nav-active)" : "var(--theme-nav-inactive)",
-                transform: active ? "scale(1.08)" : "scale(1)",
               }}
             >
+              {active && (
+                <div style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 24,
+                  height: 3,
+                  background: "linear-gradient(90deg, #C0392B, #D4A843)",
+                  borderRadius: "0 0 4px 4px",
+                }} />
+              )}
               {tab.icon(active)}
               <span
                 className="text-[11px] font-semibold tracking-wide transition-opacity duration-150"
-                style={{ opacity: active ? 1 : 0, height: active ? "auto" : 0, overflow: "hidden" }}
+                style={{ opacity: active ? 1 : 0.35 }}
               >
                 {tab.label}
               </span>
