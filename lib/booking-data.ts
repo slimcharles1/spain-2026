@@ -59,6 +59,37 @@ export const bookingItems: BookingItem[] = [
     location: { name: "Real Alcázar", query: "Real Alcazar Sevilla" },
   },
 
+  {
+    id: "ave-train",
+    title: "AVE Train — Madrid → Seville",
+    tier: "book-now",
+    date: "2026-05-17",
+    dateLabel: "Sun May 17",
+    partySize: 4,
+    url: "https://renfe.com/es/en",
+    notes: "Atocha Station, ~2.5 hrs. Book assigned seats.",
+  },
+  {
+    id: "rm-tickets",
+    title: "Real Madrid Match Tickets",
+    tier: "book-now",
+    date: "2026-05-17",
+    dateLabel: "Sun May 17, evening",
+    partySize: 2,
+    url: "https://seatpick.com",
+    notes: "Charles & Tony only. Santiago Bernabéu.",
+  },
+  {
+    id: "dstage",
+    title: "DSTAgE — 2 Michelin Stars",
+    tier: "book-now",
+    date: "2026-05-21",
+    dateLabel: "Thu May 21, 9 PM",
+    partySize: 4,
+    url: "https://dstageconcept.com",
+    notes: "16-course DTASTE menu €175/pp + wine pairing €90/pp",
+  },
+
   // BOOK CLOSER TO TRIP
   {
     id: "car-sherry",

@@ -43,23 +43,7 @@ export default function LoginPage() {
       }}
     >
       {/* Azulejo background texture */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `
-            conic-gradient(from 0deg at 50% 50%,
-              rgba(192, 57, 43, 0.03) 0deg 45deg,
-              transparent 45deg 90deg,
-              rgba(212, 168, 67, 0.025) 90deg 135deg,
-              transparent 135deg 180deg,
-              rgba(192, 57, 43, 0.03) 180deg 225deg,
-              transparent 225deg 270deg,
-              rgba(212, 168, 67, 0.025) 270deg 315deg,
-              transparent 315deg 360deg
-            )`,
-          backgroundSize: "28px 28px",
-        }}
-      />
+      <div className="absolute inset-0 azulejo-bg" />
 
       {/* Warm radial glow */}
       <div
@@ -96,13 +80,13 @@ export default function LoginPage() {
           />
           <p
             className="text-[11px] mt-3 tracking-[0.3em] uppercase"
-            style={{ color: "#1B2A4A", opacity: 0.35 }}
+            style={{ color: "#1B2A4A", opacity: 0.55 }}
           >
             Madrid & Seville
           </p>
           <p
             className="text-[10px] mt-1 tracking-[0.2em]"
-            style={{ color: "#1B2A4A", opacity: 0.2 }}
+            style={{ color: "#1B2A4A", opacity: 0.4 }}
           >
             May 15 &ndash; 22, 2026
           </p>
@@ -115,6 +99,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contrase&ntilde;a"
+            aria-label="Password"
             autoFocus
             className="w-full px-4 py-3.5 rounded-xl text-[15px] text-center outline-none transition-all"
             style={{

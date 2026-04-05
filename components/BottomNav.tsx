@@ -101,7 +101,7 @@ export default function BottomNav() {
               {tab.icon(active)}
               <span
                 className="text-[11px] font-semibold tracking-wide transition-opacity duration-150"
-                style={{ opacity: active ? 1 : 0.35 }}
+                style={{ opacity: active ? 1 : 0.5 }}
               >
                 {tab.label}
               </span>
