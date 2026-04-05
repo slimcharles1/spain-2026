@@ -1,8 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { flightInfo, infoSections } from "@/lib/info-data";
 import AppleMapsButton from "./AppleMapsButton";
+
+const CONFIRMATIONS_KEY = "spain-my-confirmations";
+
+interface MyConfirmations {
+  [key: string]: string;
+}
+
+function loadConfirmations(): MyConfirmations {
+  if (typeof window === "undefined") return {};
+  const stored = localStorage.getItem(CONFIRMATIONS_KEY);
+  return stored ? JSON.parse(stored) : {};
+}
+
+function saveConfirmations(data: MyConfirmations) {
+  localStorage.setItem(CONFIRMATIONS_KEY, JSON.stringify(data));
+}
 
 interface InfoModalProps {
   open: boolean;
@@ -11,6 +27,19 @@ interface InfoModalProps {
 
 export default function InfoModal({ open, onClose }: InfoModalProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [myConfs, setMyConfs] = useState<MyConfirmations>({});
+
+  useEffect(() => {
+    if (open) setMyConfs(loadConfirmations());
+  }, [open]);
+
+  const updateConf = (key: string, value: string) => {
+    setMyConfs((prev) => {
+      const next = { ...prev, [key]: value };
+      saveConfirmations(next);
+      return next;
+    });
+  };
 
   if (!open) return null;
 
@@ -77,6 +106,51 @@ export default function InfoModal({ open, onClose }: InfoModalProps) {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Your Confirmations — editable per-device */}
+        <div className="px-5 pb-4">
+          <div
+            className="rounded-xl p-4"
+            style={{
+              background: "var(--theme-card)",
+              border: "1px solid var(--theme-border)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+            }}
+          >
+            <h3 className="text-[13px] font-bold tracking-widest uppercase mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+              Your Confirmations
+            </h3>
+            <p className="text-[11px] mb-3" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
+              Save your own booking references here — stored on this device only.
+            </p>
+            <div className="space-y-2">
+              {[
+                { key: "flight", label: "Flight (Iberia)" },
+                { key: "urso", label: "URSO Hotel (May 16)" },
+                { key: "colon", label: "Colón Gran Meliá (May 17-19)" },
+                { key: "ingles", label: "Gran Hotel Inglés (May 20-21)" },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center gap-3">
+                  <span className="text-[12px] w-[140px] shrink-0" style={{ color: "var(--theme-text-secondary)" }}>
+                    {item.label}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Conf #"
+                    value={myConfs[item.key] ?? ""}
+                    onChange={(e) => updateConf(item.key, e.target.value)}
+                    className="flex-1 px-2.5 py-1.5 rounded-lg text-[12px] outline-none"
+                    style={{
+                      background: "rgba(27, 42, 74, 0.03)",
+                      border: "1px solid rgba(27, 42, 74, 0.08)",
+                      color: "var(--theme-text)",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Sections */}
