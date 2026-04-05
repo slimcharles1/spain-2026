@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1B2A4A"/>
+  <rect x="40" y="220" width="432" height="8" rx="4" fill="url(#grad)"/>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#C0392B"/>
+      <stop offset="50%" style="stop-color:#D4A843"/>
+      <stop offset="100%" style="stop-color:#5D6D3F"/>
+    </linearGradient>
+  </defs>
+  <text x="256" y="200" text-anchor="middle" font-family="Georgia,serif" font-size="160" font-weight="700" fill="#FFFDF7" letter-spacing="16">ES</text>
+  <text x="256" y="290" text-anchor="middle" font-family="system-ui,sans-serif" font-size="48" fill="rgba(255,253,247,0.4)" letter-spacing="8">2026</text>
+</svg>
