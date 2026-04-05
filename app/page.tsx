@@ -312,9 +312,9 @@ function PreTripView({ bookedCount, totalBookings }: { bookedCount: number; tota
         >
           {[
             { es: "La cuenta, por favor", en: "The check, please" },
-            { es: "Una mesa para cuatro", en: "A table for four" },
-            { es: "Agua del grifo", en: "Tap water (free)" },
-            { es: "¿Dónde está...?", en: "Where is...?" },
+            { es: "Ponme una caña", en: "A small draft beer" },
+            { es: "Vale", en: "OK / sure / got it" },
+            { es: "Perdona", en: "Excuse me (casual)" },
             { es: "¡Salud!", en: "Cheers!" },
           ].map((p) => (
             <div key={p.es} className="flex items-baseline justify-between gap-4">
