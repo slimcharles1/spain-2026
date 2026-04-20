@@ -122,6 +122,36 @@ describe("computeSettlements — greedy min-transfer", () => {
   });
 });
 
+describe("empty-input safety (NEG-75)", () => {
+  it("totalSpent of [] is 0", () => {
+    expect(totalSpent([])).toBe(0);
+  });
+
+  it("computeBalances of [] returns one zeroed entry per person", () => {
+    const balances = computeBalances([]);
+    expect(balances).toHaveLength(4);
+    for (const b of balances) {
+      expect(b.paid).toBe(0);
+      expect(b.share).toBe(0);
+      expect(b.net).toBe(0);
+    }
+  });
+
+  it("computeSettlements of zero balances is []", () => {
+    expect(computeSettlements(computeBalances([]))).toEqual([]);
+  });
+
+  it("topDebt of [] is null", () => {
+    expect(topDebt([])).toBeNull();
+  });
+
+  it("sumByCategory of [] returns all 5 buckets at 0", () => {
+    const sums = sumByCategory([]);
+    expect(sums).toHaveLength(5);
+    for (const s of sums) expect(s.amount).toBe(0);
+  });
+});
+
 describe("aggregates", () => {
   it("totalSpent sums every row", () => {
     const rows = [mkRow({ amount: 12.5 }), mkRow({ amount: 30 })];

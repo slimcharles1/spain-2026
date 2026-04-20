@@ -14,20 +14,27 @@ interface Props {
 
 export default function SettleUpCard({ debt, onMarkSettled }: Props) {
   if (!debt) {
+    // NEG-75: green success card when there's nothing to settle (empty
+    // table or all balances zeroed). Uses the success token (`#4A7C3E`)
+    // as the card background per the zero-state spec.
     return (
       <div
         data-testid="settle-up-card"
         className="rounded-xl p-3.5"
-        style={{ background: "#FFD23F", color: "#1B2A4A" }}
+        style={{ background: "#4A7C3E", color: "#FFFFFF" }}
       >
         <p
           className="text-[10px]"
-          style={{ fontFamily: "var(--font-display)", letterSpacing: "0.15em", color: "#4A7C3E" }}
+          style={{ fontFamily: "var(--font-display)", letterSpacing: "0.15em", color: "#FFFFFF", opacity: 0.85 }}
         >
           SETTLED UP
         </p>
-        <p className="text-[15px] font-bold mt-1" style={{ color: "#1B2A4A" }}>
-          All four are even. Nothing to settle.
+        <p
+          className="text-[15px] font-bold mt-1"
+          style={{ color: "#FFFFFF" }}
+          data-testid="settle-up-body"
+        >
+          All squared up · nothing owed
         </p>
       </div>
     );
