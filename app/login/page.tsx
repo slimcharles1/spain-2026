@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { PosterStripe } from "@/components/design-system/PosterStripe";
+import { Button } from "@/components/design-system/Button";
 
+/**
+ * Login — SPAIN / 2026 wordmark hero over a poster stripe, cream password
+ * card, red "UNLOCK TRIP" button. Design reference: Pencil node 21edL.
+ */
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -11,23 +17,22 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setError("");
     setLoading(true);
-
     try {
-      const res = await fetch("/api/auth", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
-
       if (res.ok) {
-        router.push("/");
+        router.push("/persona");
         router.refresh();
-      } else {
-        setError("Wrong password");
-        setPassword("");
+        return;
       }
+      setError("Wrong password");
+      setPassword("");
     } catch {
       setError("Something went wrong");
     } finally {
@@ -36,107 +41,176 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden"
+    <main
+      data-testid="login-page"
       style={{
-        background: "linear-gradient(170deg, #FFFCF5 0%, #FDF6EC 40%, #FAF0DC 100%)",
+        minHeight: "100svh",
+        background: "#FFFCF5",
+        color: "#1B2A4A",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "56px 24px 32px",
       }}
     >
-      {/* Azulejo background texture */}
-      <div className="absolute inset-0 azulejo-bg" />
-
-      {/* Warm radial glow */}
-      <div
-        className="absolute inset-0"
+      <section
+        aria-label="Spain 2026"
         style={{
-          background: "radial-gradient(ellipse at 50% 30%, rgba(212, 168, 67, 0.08) 0%, transparent 60%)",
+          width: "100%",
+          maxWidth: 420,
+          textAlign: "center",
+          marginTop: 24,
         }}
-      />
-
-      <div className="w-full max-w-sm text-center relative z-10">
-        {/* Decorative arch frame */}
-        <div
-          className="mx-auto mb-8 pt-10 pb-6 px-6"
+      >
+        <h1
           style={{
-            borderRadius: "50% 50% 16px 16px / 30% 30% 16px 16px",
-            border: "1px solid rgba(212, 168, 67, 0.2)",
-            background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%)",
-            backdropFilter: "blur(8px)",
-            maxWidth: 260,
+            fontFamily: "var(--font-archivo-black)",
+            fontSize: 64,
+            lineHeight: 0.95,
+            letterSpacing: "-0.02em",
+            margin: 0,
+            color: "#1B2A4A",
           }}
         >
-          <h1
-            className="text-[48px] tracking-[0.2em] leading-none"
-            style={{ fontFamily: "var(--font-display)", color: "#1B2A4A" }}
-          >
-            SPAIN
-          </h1>
-          <div
-            className="h-1 w-24 mx-auto mt-3 rounded-full animate-shimmer"
-            style={{
-              background: "linear-gradient(90deg, #C0392B, #D4A843, #5D6D3F, #D4A843, #C0392B)",
-              backgroundSize: "200% 100%",
-            }}
-          />
-          <p
-            className="text-[11px] mt-3 tracking-[0.3em] uppercase"
-            style={{ color: "#1B2A4A", opacity: 0.55 }}
-          >
-            Madrid & Seville
-          </p>
-          <p
-            className="text-[10px] mt-1 tracking-[0.2em]"
-            style={{ color: "#1B2A4A", opacity: 0.4 }}
-          >
-            May 15 &ndash; 22, 2026
-          </p>
+          SPAIN
+        </h1>
+        <div style={{ margin: "8px 0" }}>
+          <PosterStripe height={6} />
+        </div>
+        <div
+          aria-hidden
+          style={{
+            fontFamily: "var(--font-archivo-black)",
+            fontSize: 64,
+            lineHeight: 0.95,
+            letterSpacing: "-0.02em",
+            color: "#CC2E2C",
+          }}
+        >
+          2026
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-6">
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Contrase&ntilde;a"
-            aria-label="Password"
-            autoFocus
-            className="w-full px-4 py-3.5 rounded-xl text-[15px] text-center outline-none transition-all"
+        <p
+          style={{
+            marginTop: 18,
+            fontFamily: "var(--font-mono, var(--font-body))",
+            fontSize: 13,
+            color: "#6b7280",
+          }}
+        >
+          4 friends · 7 days · Madrid &rarr; Sevilla
+        </p>
+        <p
+          style={{
+            marginTop: 6,
+            fontFamily: "var(--font-archivo-black)",
+            fontSize: 11,
+            letterSpacing: "0.15em",
+            color: "#8B1E1C",
+          }}
+        >
+          MAY 16 &ndash; 22, 2026
+        </p>
+      </section>
+
+      <form
+        onSubmit={handleSubmit}
+        aria-label="Unlock the trip"
+        style={{
+          width: "100%",
+          maxWidth: 420,
+          marginTop: 40,
+          background: "#FFF8E7",
+          border: "1px solid rgba(27, 42, 74, 0.12)",
+          borderRadius: 14,
+          padding: 20,
+          boxShadow: "0 1px 0 rgba(27, 42, 74, 0.04)",
+        }}
+      >
+        <label
+          htmlFor="trip-password"
+          style={{
+            display: "block",
+            fontFamily: "var(--font-archivo-black)",
+            fontSize: 11,
+            letterSpacing: "0.2em",
+            color: "#1B2A4A",
+            marginBottom: 8,
+          }}
+        >
+          ENTER PASSWORD
+        </label>
+        <input
+          id="trip-password"
+          type="password"
+          autoFocus
+          autoComplete="off"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby="password-hint"
+          style={{
+            width: "100%",
+            padding: "12px 14px",
+            borderRadius: 10,
+            background: "#FFFCF5",
+            border: error
+              ? "1.5px solid #CC2E2C"
+              : "1px solid rgba(27, 42, 74, 0.2)",
+            fontSize: 16,
+            color: "#1B2A4A",
+            outline: "none",
+            fontFamily: "var(--font-mono, var(--font-body))",
+          }}
+        />
+        <p
+          id="password-hint"
+          style={{
+            marginTop: 8,
+            fontFamily: "var(--font-mono, var(--font-body))",
+            fontSize: 12,
+            color: "#8B7355",
+          }}
+        >
+          Hint: where are we going?
+        </p>
+        {error && (
+          <p
+            role="alert"
             style={{
-              background: "rgba(255, 255, 255, 0.7)",
-              backdropFilter: "blur(10px)",
-              border: error ? "1.5px solid #C0392B" : "1.5px solid rgba(212, 168, 67, 0.2)",
-              color: "#1B2A4A",
-              fontFamily: "var(--font-body)",
-            }}
-          />
-          {error && (
-            <p className="text-[13px] mt-2" style={{ color: "#C0392B" }}>
-              {error}
-            </p>
-          )}
-          <button
-            type="submit"
-            disabled={loading || !password}
-            className="w-full mt-4 py-3.5 rounded-xl text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40"
-            style={{
-              background: "linear-gradient(135deg, #1B2A4A 0%, #2d4a7a 100%)",
-              color: "white",
-              fontFamily: "var(--font-body)",
-              boxShadow: "0 4px 16px rgba(27, 42, 74, 0.2)",
+              marginTop: 8,
+              fontSize: 13,
+              color: "#CC2E2C",
+              fontFamily: "var(--font-mono, var(--font-body))",
             }}
           >
-            {loading ? "..." : "Entrar"}
-          </button>
-        </form>
+            {error}
+          </p>
+        )}
+        <div style={{ marginTop: 16 }}>
+          <Button
+            type="submit"
+            variant="primary"
+            block
+            disabled={loading || !password}
+            style={{ opacity: loading || !password ? 0.55 : 1, padding: "18px 20px", fontSize: 15 }}
+          >
+            {loading ? "UNLOCKING…" : "UNLOCK TRIP"}
+          </Button>
+        </div>
+      </form>
 
-        <p
-          className="text-[11px] mt-10"
-          style={{ color: "#1B2A4A", opacity: 0.12 }}
-        >
-          built by negative space llc
-        </p>
-      </div>
-    </div>
+      <footer
+        style={{
+          marginTop: "auto",
+          paddingTop: 48,
+          fontFamily: "var(--font-mono, var(--font-body))",
+          fontSize: 10,
+          color: "#9ca3af",
+        }}
+      >
+        Built by negative.space · v1.0
+      </footer>
+    </main>
   );
 }

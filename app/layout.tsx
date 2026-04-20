@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import ThemeProvider from "@/components/ThemeProvider";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import EventModalHost from "@/components/EventModalHost";
+import { AuthProvider } from "@/lib/auth-context";
 
 // Legacy display/body fonts — kept for existing screens.
 const dmSerif = DM_Serif_Display({
@@ -66,12 +67,14 @@ export default function RootLayout({
       className={`${dmSerif.variable} ${dmSans.variable} ${inter.variable} ${archivoBlack.variable}`}
     >
       <body>
-        <ThemeProvider>
-          <ServiceWorkerRegistrar />
-          <div className="pb-20">{children}</div>
-          <BottomNav />
-          <EventModalHost />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <ServiceWorkerRegistrar />
+            <div className="pb-20">{children}</div>
+            <BottomNav />
+            <EventModalHost />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

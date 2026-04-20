@@ -61,7 +61,8 @@ const tabs = [
 export default function BottomNav() {
   const pathname = usePathname();
 
-  if (pathname === "/login") return null;
+  // Hide during onboarding screens.
+  if (pathname === "/login" || pathname === "/persona") return null;
 
   return (
     <nav
