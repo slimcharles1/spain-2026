@@ -1,12 +1,12 @@
 import { test, expect, type Page } from "@playwright/test";
 
-// NEG-66 — Expenses rewrite + Event Detail Modal
+// NEG-66 + NEG-75 — Expenses rewrite + zero state + Event Detail Modal
 //
-// Covers the three behaviors the ticket calls out explicitly:
-// - Expenses renders 4 PAID BY cards + hero + category bars
-// - MARK SETTLED clears the top debt card
-// - dispatching `CustomEvent('open-event', { detail })` opens the modal
-//   with all sections and it dismisses via close / scrim
+// Expenses covers three scenarios on an empty Supabase table:
+// - Page renders hero + 4 PAID BY cards (every card €0)
+// - BY CATEGORY shows the empty-state line, no category bars
+// - RECENT shows "No transactions yet.", no "See all" link
+// - SETTLE UP shows the green "All squared up · nothing owed" card
 
 async function authenticate(page: Page) {
   await page.goto("/login");
@@ -15,42 +15,42 @@ async function authenticate(page: Page) {
   await page.waitForURL("/", { timeout: 5000 });
 }
 
-test.describe("Expenses (NEG-66)", () => {
+test.describe("Expenses — zero state (NEG-75)", () => {
   test.beforeEach(async ({ page }) => {
     await authenticate(page);
     await page.goto("/expenses");
   });
 
-  test("renders hero + 4 PAID BY cards + category bars", async ({ page }) => {
+  test("renders hero + 4 PAID BY cards with €0 each", async ({ page }) => {
     await expect(page.getByTestId("expenses-header")).toContainText("EXPENSES");
     await expect(page.getByTestId("hero-card")).toBeVisible();
-    await expect(page.getByTestId("total-spent")).toBeVisible();
+    await expect(page.getByTestId("total-spent")).toHaveText("€0");
 
     for (const id of ["charles", "carly", "tony", "ang"]) {
       await expect(page.getByTestId(`paid-by-${id}`)).toBeVisible();
-    }
-
-    // 5 category bars
-    for (const id of ["dining", "hotels", "activities", "transit", "other"]) {
-      await expect(page.getByTestId(`cat-${id}`)).toBeVisible();
+      await expect(page.getByTestId(`paid-amount-${id}`)).toHaveText("€0");
     }
   });
 
-  test("MARK SETTLED zeroes the top debt", async ({ page }) => {
-    const card = page.getByTestId("settle-up-card");
-    await expect(card).toBeVisible();
-    const before = await page.getByTestId("settle-up-body").textContent();
-    expect(before).toMatch(/owes/);
+  test("BY CATEGORY shows the empty-state line, not 5 bars", async ({ page }) => {
+    await expect(page.getByTestId("category-empty")).toBeVisible();
+    await expect(page.getByTestId("category-empty")).toContainText(
+      "No expenses yet",
+    );
+    for (const id of ["dining", "hotels", "activities", "transit", "other"]) {
+      await expect(page.getByTestId(`cat-${id}`)).toHaveCount(0);
+    }
+  });
 
-    await page.getByTestId("mark-settled-btn").click();
+  test("RECENT shows 'No transactions yet.' and hides 'See all'", async ({ page }) => {
+    await expect(page.getByTestId("recent-empty")).toHaveText("No transactions yet.");
+    await expect(page.getByTestId("see-all-link")).toHaveCount(0);
+  });
 
-    // After settling, either a new (smaller) debt shows, or the card flips
-    // to the settled-up state. The key invariant: the specific debt line
-    // changes.
-    await expect.poll(async () => {
-      const after = await page.getByTestId("settle-up-card").textContent();
-      return after !== before;
-    }, { timeout: 3000 }).toBe(true);
+  test("SETTLE UP shows the green 'All squared up' card", async ({ page }) => {
+    const body = page.getByTestId("settle-up-body");
+    await expect(body).toHaveText("All squared up · nothing owed");
+    await expect(page.getByTestId("mark-settled-btn")).toHaveCount(0);
   });
 });
 
