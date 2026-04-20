@@ -4,6 +4,7 @@ import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import ThemeProvider from "@/components/ThemeProvider";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
+import EventModalHost from "@/components/EventModalHost";
 
 const dmSerif = DM_Serif_Display({
   weight: "400",
@@ -58,6 +59,7 @@ export default function RootLayout({
           <ServiceWorkerRegistrar />
           <div className="pb-20">{children}</div>
           <BottomNav />
+          <EventModalHost />
         </ThemeProvider>
       </body>
     </html>
