@@ -56,6 +56,22 @@ const tabs = [
       </svg>
     ),
   },
+  {
+    // NEG-72: "Info" destination. The current nav didn't have an Info tab, so
+    // we're adding this one explicitly as "Info" and pointing it at /changes —
+    // the Change of Plans log IS the trip info surface.
+    href: "/changes",
+    label: "Info",
+    icon: (active: boolean) => (
+      <svg className="w-5 h-5" fill={active ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.8}>
+        {active ? (
+          <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        ) : (
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        )}
+      </svg>
+    ),
+  },
 ];
 
 export default function BottomNav() {

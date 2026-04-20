@@ -25,7 +25,9 @@ export const DEFAULT_TABS: BottomNavTab[] = [
   { href: "/today", label: "Today" },
   { href: "/bookings", label: "Bookings" },
   { href: "/expenses", label: "Expenses" },
-  { href: "/info", label: "Info" },
+  // NEG-72: Info tab points at /changes — the Change of Plans log is the
+  // trip's info surface. Keep the label "Info" so consumers don't break.
+  { href: "/changes", label: "Info" },
 ];
 
 export function BottomNav({ tabs = DEFAULT_TABS, activeHref }: BottomNavProps) {

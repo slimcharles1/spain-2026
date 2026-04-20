@@ -32,3 +32,9 @@ export type { CalloutProps, CalloutVariant } from "./Callout";
 
 export { Illustration } from "./Illustration";
 export type { IllustrationProps } from "./Illustration";
+
+export { ChangeOpenCard } from "./ChangeOpenCard";
+export type { ChangeOpenCardProps } from "./ChangeOpenCard";
+
+export { ChangeDoneCard } from "./ChangeDoneCard";
+export type { ChangeDoneCardProps } from "./ChangeDoneCard";
