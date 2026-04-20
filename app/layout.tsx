@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Serif_Display, DM_Sans, Inter } from "next/font/google";
+import { DM_Serif_Display, DM_Sans, Inter, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import ThemeProvider from "@/components/ThemeProvider";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 
+// Legacy display/body fonts — kept for existing screens.
 const dmSerif = DM_Serif_Display({
   weight: "400",
   subsets: ["latin"],
@@ -18,9 +19,19 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+// La Movida Refined (NEG-64) — display (Archivo Black) + body (Inter).
+// Exposed as CSS vars consumed by the design system (see lib/design-tokens.ts).
+const archivoBlack = Archivo_Black({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-archivo-black",
+  display: "swap",
+});
+
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-mono",
+  weight: ["400", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -51,7 +62,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerif.variable} ${dmSans.variable} ${inter.variable}`}
+      className={`${dmSerif.variable} ${dmSans.variable} ${inter.variable} ${archivoBlack.variable}`}
     >
       <body>
         <ThemeProvider>

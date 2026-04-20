@@ -30,6 +30,43 @@
   --font-display: 'DM Serif Display', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Inter', monospace;
+
+  /* ------------------------------------------------------------------
+   * La Movida Refined (NEG-64) — design system tokens.
+   * Sync with lib/design-tokens.ts. Do not hardcode these hexes.
+   * ------------------------------------------------------------------ */
+  --color-lm-red: #CC2E2C;
+  --color-lm-yellow: #FFD23F;
+  --color-lm-cobalt: #1E4D92;
+  --color-lm-pink: #FF3E7F;
+  --color-lm-cream: #F5F1E8;
+  --color-lm-ink: #1B2A4A;
+  --color-lm-gray: #6B6B6B;
+  --color-lm-stroke: #D8D1C0;
+  --color-lm-gold: #FEBE10;
+  --color-lm-success: #4A7C3E;
+
+  /* Event-type bases */
+  --color-evt-dining: #E8A94F;
+  --color-evt-dining-light: #FCEDD8;
+  --color-evt-wine: #B8476D;
+  --color-evt-wine-light: #EDD6DE;
+  --color-evt-culture: #7B5CB8;
+  --color-evt-culture-light: #EFE5F5;
+  --color-evt-activity: #E37A5A;
+  --color-evt-activity-light: #FBE3D4;
+  --color-evt-sport: #1E4D92;
+  --color-evt-sport-light: #D4E2F0;
+  --color-evt-hotel: #2A8F7E;
+  --color-evt-hotel-light: #DCEEE8;
+  --color-evt-travel: #3B6EA5;
+  --color-evt-travel-light: #DCE7F0;
+  --color-evt-free: #FEBE10;
+  --color-evt-free-light: #FCF5DE;
+
+  /* Design system font families */
+  --font-lm-display: var(--font-archivo-black), 'Archivo Black', sans-serif;
+  --font-lm-body: var(--font-inter), 'Inter', system-ui, sans-serif;
 }
 
 :root {
