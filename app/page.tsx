@@ -7,11 +7,11 @@ import { useAuth } from "@/lib/auth-context";
 /**
  * Root route is a dispatcher:
  *   - not authed → /login
- *   - authed but no currentUser for today's Madrid date → /persona
+ *   - authed but no currentUser persisted → /persona
  *   - else → /schedule
  *
  * Rendering happens on the client because the authoritative signals live in
- * a non-httpOnly cookie mirror + localStorage keyed by Madrid date.
+ * a non-httpOnly cookie mirror + localStorage.
  */
 export default function Home() {
   const router = useRouter();

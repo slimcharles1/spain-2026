@@ -22,6 +22,8 @@ export type { BadgeProps, BadgeVariant } from "./Badge";
 export { Avatar } from "./Avatar";
 export type { AvatarProps } from "./Avatar";
 
+export { CurrentUserAvatar } from "./CurrentUserAvatar";
+
 export { Button } from "./Button";
 export type { ButtonProps, ButtonVariant } from "./Button";
 
