@@ -11,10 +11,24 @@ describe("<Avatar />", () => {
   });
 
   it("renders full first name when size >= 48", () => {
+    render(<Avatar person="ang" size={64} />);
+    const a = screen.getByTestId("avatar");
+    expect(a).toHaveAttribute("data-show-name", "true");
+    expect(a).toHaveTextContent("Ang");
+  });
+
+  it("renders Charles as initials 'CJ' to fit the 64px circle", () => {
     render(<Avatar person="charles" size={64} />);
     const a = screen.getByTestId("avatar");
     expect(a).toHaveAttribute("data-show-name", "true");
-    expect(a).toHaveTextContent("Charles");
+    expect(a.textContent).toBe("CJ");
+    // Full name still preserved for a11y.
+    expect(a).toHaveAttribute("aria-label", "Charles");
+  });
+
+  it("renders Carly's first name when visible", () => {
+    render(<Avatar person="carly" size={48} />);
+    expect(screen.getByTestId("avatar")).toHaveTextContent("Carly");
   });
 
   it("respects showName override regardless of size", () => {

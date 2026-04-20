@@ -1,9 +1,21 @@
 import { personColors, personNames, type Person } from "@/lib/design-tokens";
 
 /**
+ * In-circle display label per person. Charles renders as initials ("CJ")
+ * so a 64px circle doesn't crowd; others keep their first name.
+ * The aria-label still uses the full name from personNames for a11y.
+ */
+const DISPLAY_NAME: Record<Person, string> = {
+  ang: "Ang",
+  carly: "Carly",
+  charles: "CJ",
+  tony: "Tony",
+};
+
+/**
  * Avatar — single-person color circle.
  *
- * Full first name renders INSIDE the circle when:
+ * In-circle display label (from DISPLAY_NAME) renders when:
  *   - size is >= 48, OR
  *   - showName is explicitly set to true.
  *
@@ -20,6 +32,7 @@ export interface AvatarProps {
 export function Avatar({ person, size = 32, showName, className }: AvatarProps) {
   const color = personColors[person];
   const name = personNames[person];
+  const label = DISPLAY_NAME[person];
   const renderName = showName ?? size >= 48;
 
   return (
@@ -49,7 +62,7 @@ export function Avatar({ person, size = 32, showName, className }: AvatarProps) 
         flexShrink: 0,
       }}
     >
-      {renderName ? name : ""}
+      {renderName ? label : ""}
     </span>
   );
 }
