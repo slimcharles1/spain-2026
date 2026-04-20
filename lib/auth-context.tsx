@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useSyncExternalStore,
   type ReactNode,
@@ -12,9 +11,7 @@ import {
 import {
   PERSONAS,
   clearPersona,
-  madridDateKey,
   readPersona,
-  storageKey,
   writePersona,
   type Persona,
 } from "./persona-storage";
@@ -25,7 +22,7 @@ export { PERSONAS };
 type AuthContextValue = {
   /** True when the trip password cookie is present. */
   isAuthed: boolean;
-  /** Which traveler is actively using the device today, or null. */
+  /** Which traveler is actively using the device, or null. */
   currentUser: Persona | null;
   /** True after the client has hydrated from cookie + localStorage. */
   hydrated: boolean;
@@ -49,10 +46,10 @@ function readAuthCookie(): boolean {
 }
 
 // --- External-store glue -----------------------------------------------------
-// We keep two client-only signals (auth cookie + persona for today's Madrid
-// date) outside React via `useSyncExternalStore`. This is the blessed pattern
-// for hydrating from non-server data without tripping the React 19 "don't set
-// state in an effect" rule.
+// We keep two client-only signals (auth cookie + persisted persona) outside
+// React via `useSyncExternalStore`. This is the blessed pattern for hydrating
+// from non-server data without tripping the React 19 "don't set state in an
+// effect" rule.
 
 const listeners = new Set<() => void>();
 function notify() {
@@ -103,21 +100,6 @@ export function AuthProvider({ children, initialAuthed }: AuthProviderProps) {
     () => false
   );
 
-  // Watch for Madrid-date rollover while the tab is open. A minute-resolution
-  // poll catches midnight within 60 s — good enough for a trip companion.
-  useEffect(() => {
-    let lastKey = storageKey();
-    const interval = window.setInterval(() => {
-      const k = storageKey();
-      if (k !== lastKey) {
-        lastKey = k;
-        // Day changed — any persona under the old key no longer applies.
-        notify();
-      }
-    }, 60_000);
-    return () => window.clearInterval(interval);
-  }, []);
-
   const setCurrentUser = useCallback((user: Persona) => {
     writePersona(user);
     notify();
@@ -148,6 +130,3 @@ export function useAuth(): AuthContextValue {
   }
   return ctx;
 }
-
-/** Exposed for tests / callers that want the raw Madrid date key. */
-export { madridDateKey };

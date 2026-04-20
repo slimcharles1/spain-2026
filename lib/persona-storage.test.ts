@@ -1,111 +1,125 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  STORAGE_KEY,
   clearPersona,
-  madridDateKey,
   readPersona,
-  storageKey,
   writePersona,
 } from "./persona-storage";
-
-describe("madridDateKey", () => {
-  it("formats as YYYYMMDD", () => {
-    const d = new Date("2026-05-16T10:00:00Z");
-    // 10:00 UTC on 2026-05-16 is 12:00 Madrid (CEST, UTC+2) → 20260516
-    expect(madridDateKey(d)).toBe("20260516");
-  });
-
-  it("rolls over at Madrid midnight (not UTC midnight)", () => {
-    // 2026-05-16 22:30 UTC == 2026-05-17 00:30 Madrid (CEST, UTC+2).
-    const beforeMadridMidnight = new Date("2026-05-16T21:59:00Z"); // 23:59 Madrid
-    const afterMadridMidnight = new Date("2026-05-16T22:01:00Z"); // 00:01 Madrid next day
-    expect(madridDateKey(beforeMadridMidnight)).toBe("20260516");
-    expect(madridDateKey(afterMadridMidnight)).toBe("20260517");
-  });
-
-  it("stays on the same day right up to Madrid midnight", () => {
-    // 2026-05-16 21:30 UTC == 2026-05-16 23:30 Madrid (CEST).
-    const d = new Date("2026-05-16T21:30:00Z");
-    expect(madridDateKey(d)).toBe("20260516");
-  });
-
-  it("storageKey is prefixed with spain_persona_", () => {
-    const d = new Date("2026-05-16T12:00:00Z");
-    expect(storageKey(d)).toBe("spain_persona_20260516");
-  });
-});
 
 describe("read/write/clearPersona (localStorage)", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it("round-trips a persona for today's Madrid date", () => {
-    const d = new Date("2026-05-16T12:00:00Z");
-    writePersona("ang", d);
-    expect(readPersona(d)).toBe("ang");
+  it("round-trips a persona", () => {
+    writePersona("ang");
+    expect(readPersona()).toBe("ang");
   });
 
   it("returns null when no persona is set", () => {
-    expect(readPersona(new Date("2026-05-16T12:00:00Z"))).toBeNull();
-  });
-
-  it("ignores personas stored under a different Madrid date", () => {
-    const day1 = new Date("2026-05-16T12:00:00Z");
-    const day2 = new Date("2026-05-17T12:00:00Z");
-    writePersona("charles", day1);
-    // On day 2, the day-1 key no longer matches.
-    expect(readPersona(day2)).toBeNull();
+    expect(readPersona()).toBeNull();
   });
 
   it("ignores unknown values in the slot (tamper-safe)", () => {
-    const d = new Date("2026-05-16T12:00:00Z");
-    window.localStorage.setItem(storageKey(d), "elvis");
-    expect(readPersona(d)).toBeNull();
+    window.localStorage.setItem(STORAGE_KEY, "elvis");
+    expect(readPersona()).toBeNull();
   });
 
-  it("clearPersona removes today's key without touching others", () => {
-    const day1 = new Date("2026-05-16T12:00:00Z");
-    const day2 = new Date("2026-05-17T12:00:00Z");
-    writePersona("tony", day1);
-    // Simulate a pre-existing entry under a later date we shouldn't stomp on.
-    window.localStorage.setItem(storageKey(day2), "carly");
-    clearPersona(day1);
-    expect(window.localStorage.getItem(storageKey(day1))).toBeNull();
-    expect(window.localStorage.getItem(storageKey(day2))).toBe("carly");
+  it("clearPersona removes the persona key", () => {
+    writePersona("tony");
+    clearPersona();
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(readPersona()).toBeNull();
   });
 
-  it("writePersona sweeps stale keys from previous days", () => {
-    const yesterday = new Date("2026-05-15T12:00:00Z");
-    const today = new Date("2026-05-16T12:00:00Z");
-    writePersona("ang", yesterday);
-    expect(window.localStorage.getItem(storageKey(yesterday))).toBe("ang");
-    writePersona("carly", today);
-    // The yesterday key is garbage-collected so localStorage doesn't grow.
-    expect(window.localStorage.getItem(storageKey(yesterday))).toBeNull();
-    expect(window.localStorage.getItem(storageKey(today))).toBe("carly");
+  it("writePersona overwrites an earlier choice in place", () => {
+    writePersona("ang");
+    writePersona("carly");
+    expect(readPersona()).toBe("carly");
+    // Exactly one persona entry — no accumulation.
+    let count = 0;
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (k && k.includes("spain_persona")) count++;
+    }
+    expect(count).toBe(1);
   });
 
-  it("does not touch non-persona keys during sweep", () => {
-    const yesterday = new Date("2026-05-15T12:00:00Z");
-    const today = new Date("2026-05-16T12:00:00Z");
+  it("does not touch non-persona keys", () => {
     window.localStorage.setItem("spain-bookings", JSON.stringify({ foo: 1 }));
-    writePersona("ang", yesterday);
-    writePersona("tony", today);
+    writePersona("ang");
+    clearPersona();
     expect(window.localStorage.getItem("spain-bookings")).not.toBeNull();
   });
 });
 
-describe("Madrid-midnight rollover", () => {
+describe("persistence across days", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it("persona set before Madrid midnight does not survive into the next Madrid day", () => {
-    const beforeMidnight = new Date("2026-05-16T21:30:00Z"); // 23:30 Madrid
-    const afterMidnight = new Date("2026-05-16T22:30:00Z"); // 00:30 Madrid next day
-    writePersona("charles", beforeMidnight);
-    expect(readPersona(beforeMidnight)).toBe("charles");
-    // Same localStorage, new Madrid day → persona picker will re-prompt.
-    expect(readPersona(afterMidnight)).toBeNull();
+  it("persona set once survives indefinitely — no date-based rollover", () => {
+    // Simulate writing the persona "yesterday" (the clock is irrelevant now
+    // that the storage key is not date-keyed). What matters is that a later
+    // read returns the same value without any day-boundary parameter.
+    writePersona("charles");
+    expect(readPersona()).toBe("charles");
+    // A subsequent read — in a new JS tick, a new day, a new trip — still
+    // finds the same value. No sweep has happened.
+    expect(readPersona()).toBe("charles");
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe("charles");
+  });
+});
+
+describe("legacy-key migration", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it("promotes the most-recent legacy date-keyed value to the new key", () => {
+    // Two legacy entries from pre-NEG-71 builds. The lexicographically
+    // highest suffix is the freshest.
+    window.localStorage.setItem("spain_persona_20260515", "tony");
+    window.localStorage.setItem("spain_persona_20260520", "carly");
+
+    expect(readPersona()).toBe("carly");
+    // The new key is populated.
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe("carly");
+    // And both legacy keys are cleaned up.
+    expect(window.localStorage.getItem("spain_persona_20260515")).toBeNull();
+    expect(window.localStorage.getItem("spain_persona_20260520")).toBeNull();
+  });
+
+  it("is a no-op once there are no legacy keys", () => {
+    writePersona("ang");
+    // Second read hits the new key directly; no legacy traversal needed.
+    expect(readPersona()).toBe("ang");
+    // Still exactly one persona entry.
+    let count = 0;
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (k && k.includes("spain_persona")) count++;
+    }
+    expect(count).toBe(1);
+  });
+
+  it("preserves a fresh new-key choice and still sweeps legacy keys", () => {
+    // Simulates an upgrade where the user already made a fresh pick under
+    // the new key before the migration path ran.
+    window.localStorage.setItem(STORAGE_KEY, "ang");
+    window.localStorage.setItem("spain_persona_20260515", "tony");
+
+    expect(readPersona()).toBe("ang");
+    // Legacy swept regardless.
+    expect(window.localStorage.getItem("spain_persona_20260515")).toBeNull();
+    // New key untouched.
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe("ang");
+  });
+
+  it("ignores legacy entries that contain garbage values", () => {
+    window.localStorage.setItem("spain_persona_20260515", "elvis");
+    expect(readPersona()).toBeNull();
+    // Garbage legacy key still gets swept.
+    expect(window.localStorage.getItem("spain_persona_20260515")).toBeNull();
   });
 });
