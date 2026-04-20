@@ -10,6 +10,7 @@ export default defineConfig({
     include: [
       "tests/**/*.test.{ts,tsx}",
       "components/**/*.test.{ts,tsx}",
+      "lib/**/*.test.{ts,tsx}",
     ],
   },
   resolve: {
