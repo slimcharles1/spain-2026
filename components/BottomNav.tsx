@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 
 const tabs = [
   {
-    href: "/",
+    // NEG-73: "Home" is now the landing page at /home, not the root dispatcher.
+    href: "/home",
     label: "Home",
     icon: (active: boolean) => (
       <svg className="w-5 h-5" fill={active ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.8}>
@@ -18,8 +19,9 @@ const tabs = [
     ),
   },
   {
+    // NEG-73: "Schedule" relabeled to "Today" to match design-system nav.
     href: "/schedule",
-    label: "Schedule",
+    label: "Today",
     icon: (active: boolean) => (
       <svg className="w-5 h-5" fill={active ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.8}>
         {active ? (
@@ -93,7 +95,7 @@ export default function BottomNav() {
     >
       <div className="flex items-center justify-around max-w-lg mx-auto px-1" style={{ paddingBottom: "env(safe-area-inset-bottom)", height: "calc(64px + env(safe-area-inset-bottom))" }}>
         {tabs.map((tab) => {
-          const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
+          const active = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
           return (
             <Link
               key={tab.href}

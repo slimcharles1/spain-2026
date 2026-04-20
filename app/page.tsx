@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth-context";
  * Root route is a dispatcher:
  *   - not authed → /login
  *   - authed but no currentUser persisted → /persona
- *   - else → /schedule
+ *   - else → /home (NEG-73; was /schedule)
  *
  * Rendering happens on the client because the authoritative signals live in
  * a non-httpOnly cookie mirror + localStorage.
@@ -27,7 +27,7 @@ export default function Home() {
       router.replace("/persona");
       return;
     }
-    router.replace("/schedule");
+    router.replace("/home");
   }, [hydrated, isAuthed, currentUser, router]);
 
   // Transient splash — keeps the cream background while we redirect so the

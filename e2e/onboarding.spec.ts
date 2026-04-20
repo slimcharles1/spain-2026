@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Onboarding + persona-switch flow (NEG-67 + NEG-71):
+ * Onboarding + persona-switch flow (NEG-67 + NEG-71 + NEG-73):
  *   - Fresh visit → /login
  *   - Wrong password → error, still on /login
  *   - Correct password → /persona
@@ -10,6 +10,7 @@ import { expect, test } from "@playwright/test";
  *   - Persona now persists indefinitely (no Madrid-midnight reset)
  *   - Legacy date-suffixed keys are migrated on first read
  *   - Top-right avatar → /persona → switch persona mid-session
+ *   - Root dispatcher lands authed+persona users on /home (NEG-73)
  *
  * Requires TRIP_PASSWORD=sevilla in the test env.
  */
@@ -102,8 +103,8 @@ test.describe("onboarding", () => {
     expect(beforeReload).toBe("carly");
 
     await page.goto("/");
-    // Root dispatcher sends authed-and-has-persona straight to /schedule.
-    await page.waitForURL(/\/schedule/);
+    // Root dispatcher now sends authed-and-has-persona to /home (NEG-73).
+    await page.waitForURL(/\/home$/);
     const afterReload = await page.evaluate(() =>
       window.localStorage.getItem("spain_persona")
     );
@@ -125,8 +126,8 @@ test.describe("onboarding", () => {
     });
 
     await page.goto("/");
-    // Authed + migrated-persona → /schedule, not /persona.
-    await page.waitForURL(/\/schedule/);
+    // Authed + migrated-persona → /home (NEG-73; previously /schedule), not /persona.
+    await page.waitForURL(/\/home$/);
 
     const state = await page.evaluate(() => ({
       migrated: window.localStorage.getItem("spain_persona"),

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { colors, radii } from "@/lib/design-tokens";
 
 /**
- * BottomNav — pill tab bar with 4 tabs (Today / Bookings / Expenses / Info).
+ * BottomNav — pill tab bar with 5 tabs (Home / Today / Bookings / Expenses / Info).
  * Active route gets cobalt pill + cream text; inactive gets ink on transparent.
  * English-only chrome (no Spanish in tab labels).
  */
@@ -22,6 +22,8 @@ export interface BottomNavProps {
 }
 
 export const DEFAULT_TABS: BottomNavTab[] = [
+  // NEG-73: "Home" is the landing page — left-most tab.
+  { href: "/home", label: "Home" },
   { href: "/today", label: "Today" },
   { href: "/bookings", label: "Bookings" },
   { href: "/expenses", label: "Expenses" },
