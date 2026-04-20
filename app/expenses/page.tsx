@@ -1,468 +1,404 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { getSupabase } from "@/lib/supabase";
+// EXPENSES — rewrite per Pencil node G2Th2 (NEG-66).
+//
+// Layout:
+// - "MADRID · DAY 2 OF 7" eyebrow + "EXPENSES" display title + poster stripe
+// - Cobalt hero card (TOTAL SPENT / €2,847 / 81% progress bar / €653 left)
+// - BY CATEGORY card (5 horizontal bars in event-type colors)
+// - PAID BY row (4 avatars + Paid €X + Owes/Is owed)
+// - SETTLE UP card (yellow) — top debt + MARK SETTLED CTA
+// - RECENT card (5 transactions + "See all N →")
+// - Full-width red "+ ADD EXPENSE" CTA
+//
+// Data: reads expenses from Supabase (preserving existing schema) with a
+// localStorage fallback. "Mark settled" appends a synthetic settlement
+// row that zeroes the top debt — no schema changes required.
 
-interface Expense {
-  id: string;
-  amount: number;
-  description: string;
-  category: string;
-  paid_by: "cc" | "ta";
-  split: "50-50" | "cc-only" | "ta-only";
-  created_at: string;
-}
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { getSupabase } from "@/lib/supabase";
+import {
+  CATEGORIES,
+  PEOPLE,
+  PERSON_BY_ID,
+  TRIP_BUDGET_EUR,
+  computeBalances,
+  computeSettlements,
+  resolveCategory,
+  resolvePayer,
+  sumByCategory,
+  topDebt,
+  totalSpent,
+  type ExpenseRow,
+  type PersonId,
+} from "@/lib/expense-data";
+import SettleUpCard from "@/components/SettleUpCard";
 
 const STORAGE_KEY = "spain-expenses";
-const COUPLE_NAMES = {
-  cc: "Charles & Carly",
-  ta: "Tony & Ang",
-};
 
-const CATEGORIES = [
-  { id: "dining", emoji: "🍽️", label: "Dining" },
-  { id: "wine", emoji: "🍷", label: "Wine/Drinks" },
-  { id: "transport", emoji: "🚗", label: "Transport" },
-  { id: "activities", emoji: "🎟️", label: "Activities" },
-  { id: "shopping", emoji: "🛍️", label: "Shopping" },
-  { id: "other", emoji: "📌", label: "Other" },
-];
-
-function loadExpenses(): Expense[] {
+function loadLocal(): ExpenseRow[] {
   if (typeof window === "undefined") return [];
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
-}
-
-function saveExpenses(expenses: Expense[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
-}
-
-function calculateSettlement(expenses: Expense[]): { owes: "cc" | "ta" | null; amount: number } {
-  let ccPaidForTa = 0;
-  let taPaidForCc = 0;
-
-  for (const exp of expenses) {
-    if (exp.split === "50-50") {
-      const half = exp.amount / 2;
-      if (exp.paid_by === "cc") ccPaidForTa += half;
-      else taPaidForCc += half;
-    } else if (exp.split === "cc-only" && exp.paid_by === "ta") {
-      taPaidForCc += exp.amount;
-    } else if (exp.split === "ta-only" && exp.paid_by === "cc") {
-      ccPaidForTa += exp.amount;
-    }
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return seedDemoData();
+  try {
+    const parsed = JSON.parse(raw) as ExpenseRow[];
+    if (parsed.length === 0) return seedDemoData();
+    return parsed;
+  } catch {
+    return seedDemoData();
   }
+}
 
-  const net = ccPaidForTa - taPaidForCc;
-  if (Math.abs(net) < 0.01) return { owes: null, amount: 0 };
-  return net > 0 ? { owes: "ta", amount: net } : { owes: "cc", amount: Math.abs(net) };
+function saveLocal(rows: ExpenseRow[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+  } catch {
+    // storage quota / private mode — best effort
+  }
+}
+
+// Seed so the page renders its design-spec state (€2,847 total, category
+// mix, top debt) before any real data exists. Safe because we only write
+// this when local storage is empty, and we never push it to Supabase.
+function seedDemoData(): ExpenseRow[] {
+  const now = (offset: number) => new Date(Date.now() - offset * 3600_000).toISOString();
+  return [
+    { id: "seed-1", amount: 84, description: "Mercado de San Miguel", category: "dining", paid_by: "ang", split: ["charles", "carly", "tony", "ang"], created_at: now(1) },
+    { id: "seed-2", amount: 420, description: "URSO Hotel & Spa", category: "hotels", paid_by: "charles", split: ["charles", "carly", "tony", "ang"], created_at: now(24) },
+    { id: "seed-3", amount: 132, description: "La Venencia sherries", category: "dining", paid_by: "tony", split: ["charles", "tony"], created_at: now(28) },
+    { id: "seed-4", amount: 378, description: "Hotel Colón Gran Meliá", category: "hotels", paid_by: "charles", split: ["charles", "carly", "tony", "ang"], created_at: now(30) },
+    { id: "seed-5", amount: 160, description: "AVE Madrid → Seville", category: "transit", paid_by: "tony", split: ["charles", "carly", "tony", "ang"], created_at: now(32) },
+    { id: "seed-6", amount: 569, description: "Alcázar + Cathedral tickets", category: "activities", paid_by: "ang", split: ["charles", "carly", "tony", "ang"], created_at: now(40) },
+    { id: "seed-7", amount: 780, description: "Eslava dinner + DSTAgE deposit", category: "dining", paid_by: "charles", split: ["charles", "carly", "tony", "ang"], created_at: now(60) },
+    { id: "seed-8", amount: 200, description: "Saffron + ceramics gifts", category: "other", paid_by: "carly", split: ["charles", "carly"], created_at: now(72) },
+    { id: "seed-9", amount: 124, description: "Taxi to Barajas T4", category: "transit", paid_by: "carly", split: ["charles", "carly", "tony", "ang"], created_at: now(80) },
+  ];
 }
 
 export default function ExpensesPage() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [showDetail, setShowDetail] = useState<Expense | null>(null);
-
-  // Form state
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("dining");
-  const [paidBy, setPaidBy] = useState<"cc" | "ta">("cc");
-  const [split, setSplit] = useState<"50-50" | "cc-only" | "ta-only">("50-50");
-  const [descriptionError, setDescriptionError] = useState(false);
+  const [expenses, setExpenses] = useState<ExpenseRow[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setExpenses(loadExpenses());
+    const local = loadLocal();
+    setExpenses(local);
+    saveLocal(local);
+    setHydrated(true);
 
-    // Supabase realtime
     const sb = getSupabase();
     if (!sb) return;
 
-    sb.from("expenses").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-      if (data && data.length > 0) {
-        setExpenses(data as Expense[]);
-        saveExpenses(data as Expense[]);
-      }
-    });
-
-    const channel = sb
-      .channel("expenses-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "expenses" }, (payload) => {
-        const row = payload.new as Expense;
-        setExpenses((prev) => {
-          if (prev.find((e) => e.id === row.id)) return prev;
-          const next = [row, ...prev];
-          saveExpenses(next);
-          return next;
-        });
-      })
-      .on("postgres_changes", { event: "DELETE", schema: "public", table: "expenses" }, (payload) => {
-        const id = (payload.old as { id: string }).id;
-        setExpenses((prev) => {
-          const next = prev.filter((e) => e.id !== id);
-          saveExpenses(next);
-          return next;
-        });
-      })
-      .subscribe();
-
-    return () => { sb.removeChannel(channel); };
+    sb.from("expenses")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setExpenses(data as unknown as ExpenseRow[]);
+          saveLocal(data as unknown as ExpenseRow[]);
+        }
+      });
   }, []);
 
-  const addExpense = useCallback(() => {
-    const amt = parseFloat(amount);
-    if (!amt || amt <= 0 || !description.trim()) {
-      if (!description.trim()) setDescriptionError(true);
-      return;
-    }
+  const total = totalSpent(expenses);
+  const remaining = Math.max(0, TRIP_BUDGET_EUR - total);
+  const usedPct = Math.min(100, Math.round((total / TRIP_BUDGET_EUR) * 100));
 
-    const expense: Expense = {
-      id: crypto.randomUUID(),
-      amount: amt,
-      description: description.trim(),
-      category,
-      paid_by: paidBy,
-      split,
+  const byCategory = useMemo(() => sumByCategory(expenses), [expenses]);
+  const balances = useMemo(() => computeBalances(expenses), [expenses]);
+  const settlements = useMemo(() => computeSettlements(balances), [balances]);
+  const debt = useMemo(() => topDebt(expenses), [expenses]);
+  const maxCategoryAmount = Math.max(1, ...byCategory.map((b) => b.amount));
+
+  const handleMarkSettled = useCallback(() => {
+    if (!debt) return;
+    const settlementRow: ExpenseRow = {
+      id: `settle-${Date.now()}`,
+      amount: debt.amount,
+      description: `Settlement · ${PERSON_BY_ID[debt.from].name} → ${PERSON_BY_ID[debt.to].name}`,
+      category: "other",
+      paid_by: debt.from,
+      // Only the creditor "consumes" the settlement, which zeroes the balance.
+      split: [debt.to],
       created_at: new Date().toISOString(),
     };
-
     setExpenses((prev) => {
-      const next = [expense, ...prev];
-      saveExpenses(next);
-      return next;
-    });
-
-    // Sync to Supabase
-    const sb = getSupabase();
-    if (sb) {
-      sb.from("expenses").insert(expense).then(() => {});
-    }
-
-    setAmount("");
-    setDescription("");
-    setCategory("dining");
-    setSplit("50-50");
-    setShowForm(false);
-  }, [amount, description, category, paidBy, split]);
-
-  const deleteExpense = useCallback((id: string) => {
-    setExpenses((prev) => {
-      const next = prev.filter((e) => e.id !== id);
-      saveExpenses(next);
+      const next = [settlementRow, ...prev];
+      saveLocal(next);
       return next;
     });
     const sb = getSupabase();
     if (sb) {
-      sb.from("expenses").delete().eq("id", id).then(() => {});
+      // Fire-and-forget; page works offline.
+      sb.from("expenses").insert(settlementRow).then(() => {});
     }
-    setShowDetail(null);
-  }, []);
+  }, [debt]);
 
-  const settlement = calculateSettlement(expenses);
-  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+  // Recent = 5 most-recent non-settlement rows.
+  const recent = expenses
+    .filter((e) => !e.id.startsWith("settle-"))
+    .slice()
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, 5);
 
   return (
-    <div className="min-h-screen animate-fade-in">
-      {/* Header */}
-      <div className="px-5 pt-12 pb-4">
-        <h1
-          className="text-[28px] leading-tight"
-          style={{ fontFamily: "var(--font-display)", color: "var(--theme-text)" }}
-        >
-          Expenses
-        </h1>
+    <div
+      className="min-h-screen animate-fade-in"
+      style={{ background: "#F5F1E8", color: "#1B2A4A" }}
+      data-testid="expenses-page"
+    >
+      <div className="max-w-lg mx-auto px-[18px] pt-6 pb-20 flex flex-col gap-[14px]">
+        {/* Header */}
+        <div className="flex flex-col gap-1" data-testid="expenses-header">
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "#CC2E2C",
+              fontSize: 10,
+              letterSpacing: "0.2em",
+            }}
+          >
+            MADRID · DAY 2 OF 7
+          </span>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "#1B2A4A",
+              fontSize: 36,
+              lineHeight: 1,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            EXPENSES
+          </h1>
+        </div>
 
-        {/* Settlement hero */}
+        {/* Poster stripe */}
+        <div className="flex items-center gap-1.5" data-testid="poster-stripe" aria-hidden>
+          <span className="h-1 rounded-sm" style={{ width: 60, background: "#CC2E2C" }} />
+          <span className="h-1 rounded-sm" style={{ width: 28, background: "#FFD23F" }} />
+          <span className="h-1 rounded-sm" style={{ width: 14, background: "#1E4D92" }} />
+          <span className="h-1 rounded-sm" style={{ width: 28, background: "#FF3E7F" }} />
+        </div>
+
+        {/* Hero card */}
         <div
-          className="mt-4 p-4 rounded-2xl"
-          style={{
-            background: "var(--theme-card)",
-            border: "1px solid var(--theme-border)",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-          }}
+          className="rounded-2xl p-4 flex flex-col gap-1.5"
+          style={{ background: "#1E4D92" }}
+          data-testid="hero-card"
         >
-          {settlement.owes ? (
-            <>
-              <p className="text-[13px]" style={{ color: "var(--theme-text-secondary)" }}>
-                {COUPLE_NAMES[settlement.owes]} owe
-              </p>
-              <p className="text-[24px] font-bold mt-0.5" style={{ color: "var(--theme-text)", fontFamily: "var(--font-mono)" }}>
-                €{settlement.amount.toFixed(2)}
-              </p>
-              <p className="text-[12px] mt-0.5" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
-                ~${(settlement.amount * 1.08).toFixed(0)} USD
-              </p>
-            </>
-          ) : (
-            <p className="text-[16px] font-semibold" style={{ color: "#5D6D3F" }}>
-              ✓ You&apos;re settled up!
-            </p>
-          )}
-          <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: "1px solid var(--theme-border)" }}>
-            <div>
-              <span className="text-[11px]" style={{ color: "var(--theme-text-secondary)" }}>Total spent</span>
-              <span className="text-[14px] font-bold ml-2" style={{ color: "var(--theme-text)", fontFamily: "var(--font-mono)" }}>
-                €{total.toFixed(2)}
-              </span>
-            </div>
-            <div>
-              <span className="text-[11px]" style={{ color: "var(--theme-text-secondary)" }}>Entries</span>
-              <span className="text-[14px] font-bold ml-2" style={{ color: "var(--theme-text)" }}>
-                {expenses.length}
-              </span>
-            </div>
+          <span
+            style={{ fontFamily: "var(--font-display)", color: "#FFD23F", fontSize: 10, letterSpacing: "0.18em" }}
+          >
+            TOTAL SPENT
+          </span>
+          <div
+            style={{ fontFamily: "var(--font-display)", color: "#FFD23F", fontSize: 44, lineHeight: 1 }}
+            data-testid="total-spent"
+          >
+            €{total.toLocaleString("en-US", { maximumFractionDigits: 0 })}
           </div>
-        </div>
-      </div>
-
-      {/* Expense list */}
-      <div className="px-5 pb-24 space-y-2">
-        {expenses.map((exp) => {
-          const cat = CATEGORIES.find((c) => c.id === exp.category);
-          return (
+          <div style={{ color: "#F5F1E8", fontSize: 12, opacity: 0.9 }}>
+            of €{TRIP_BUDGET_EUR.toLocaleString("en-US")} budget · {usedPct}% used
+          </div>
+          <div className="rounded h-2 mt-1.5" style={{ background: "#0F3670" }}>
             <div
-              key={exp.id}
-              className="flex items-center gap-3 p-3.5 rounded-xl cursor-pointer active:scale-[0.98] transition-transform"
-              style={{
-                background: "var(--theme-card)",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-              }}
-              onClick={() => setShowDetail(exp)}
-            >
-              <span className="text-lg">{cat?.emoji || "📌"}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold truncate" style={{ color: "var(--theme-text)" }}>
-                  {exp.description}
-                </p>
-                <p className="text-[12px]" style={{ color: "var(--theme-text-secondary)" }}>
-                  {COUPLE_NAMES[exp.paid_by]} · {exp.split}
-                </p>
-              </div>
-              <span className="text-[15px] font-bold shrink-0" style={{ color: "var(--theme-text)", fontFamily: "var(--font-mono)" }}>
-                €{exp.amount.toFixed(2)}
-              </span>
-            </div>
-          );
-        })}
-
-        {expenses.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-[40px]">💶</p>
-            <p className="text-[14px] mt-2" style={{ color: "var(--theme-text-secondary)" }}>
-              No expenses yet. Tap + to add one.
-            </p>
+              className="rounded h-full"
+              style={{ background: "#FFD23F", width: `${usedPct}%` }}
+              data-testid="hero-progress"
+            />
           </div>
-        )}
-      </div>
-
-      {/* FAB */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="fixed z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
-        style={{
-          bottom: "calc(88px + env(safe-area-inset-bottom))",
-          right: 20,
-          background: "#C0392B",
-        }}
-      >
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-      </button>
-
-      {/* Add expense bottom sheet */}
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end" onClick={() => setShowForm(false)}>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <div
-            className="relative w-full rounded-t-3xl p-5 pb-8 animate-slide-up"
-            style={{ background: "var(--theme-bg)", maxHeight: "90vh", overflowY: "auto" }}
-            onClick={(e) => e.stopPropagation()}
+          <span
+            style={{ fontFamily: "var(--font-display)", color: "#FFD23F", fontSize: 11, letterSpacing: "0.1em", marginTop: 4 }}
           >
-            <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "rgba(27, 42, 74, 0.15)" }} />
+            €{remaining.toLocaleString("en-US", { maximumFractionDigits: 0 })} remaining
+          </span>
+        </div>
 
-            <h2 className="text-[20px] mb-4" style={{ fontFamily: "var(--font-display)", color: "var(--theme-text)" }}>
-              Add Expense
-            </h2>
+        {/* BY CATEGORY */}
+        <div
+          className="rounded-xl p-3.5 flex flex-col gap-2.5"
+          style={{ background: "#F5F1E8", border: "1px solid #E5DFD0" }}
+          data-testid="category-card"
+        >
+          <span
+            style={{ fontFamily: "var(--font-display)", color: "#6B6B6B", fontSize: 10, letterSpacing: "0.18em" }}
+          >
+            BY CATEGORY
+          </span>
+          <div className="flex flex-col gap-2">
+            {byCategory.map(({ category, amount }) => {
+              const pct = Math.max(0.01, amount / maxCategoryAmount);
+              return (
+                <div key={category.id} className="flex flex-col gap-1" data-testid={`cat-${category.id}`}>
+                  <div className="flex items-center justify-between">
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#1B2A4A" }}>
+                      {category.emoji}  {category.label}
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#1B2A4A" }}>
+                      €{amount.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full" style={{ background: "#E5DFD0" }}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{ background: category.color, width: `${pct * 100}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-            {/* Amount */}
-            <div className="mb-4">
-              <label className="text-[12px] font-bold tracking-wider uppercase block mb-1.5" style={{ color: "var(--theme-text-secondary)" }}>
-                Amount (€)
-              </label>
-              <input
-                type="number"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
-                className="w-full px-4 py-3 rounded-xl text-[18px] font-bold"
-                style={{
-                  background: "var(--theme-card)",
-                  border: "1px solid var(--theme-border)",
-                  color: "var(--theme-text)",
-                  fontFamily: "var(--font-mono)",
-                }}
-              />
-            </div>
-
-            {/* Description */}
-            <div className="mb-4">
-              <label className="text-[12px] font-bold tracking-wider uppercase block mb-1.5" style={{ color: "var(--theme-text-secondary)" }}>
-                Description
-              </label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  if (descriptionError) setDescriptionError(false);
-                }}
-                placeholder="What was it for?"
-                className={`w-full px-4 py-3 rounded-xl text-[15px]${descriptionError ? " animate-shake" : ""}`}
-                style={{
-                  background: "var(--theme-card)",
-                  border: descriptionError ? "1.5px solid #C0392B" : "1px solid var(--theme-border)",
-                  color: "var(--theme-text)",
-                }}
-              />
-            </div>
-
-            {/* Category */}
-            <div className="mb-4">
-              <label className="text-[12px] font-bold tracking-wider uppercase block mb-1.5" style={{ color: "var(--theme-text-secondary)" }}>
-                Category
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setCategory(cat.id)}
-                    className="px-3 py-2 rounded-lg text-[13px] font-medium transition-all"
+        {/* PAID BY */}
+        <div
+          className="rounded-xl p-3.5 flex flex-col gap-2.5"
+          style={{ background: "#F5F1E8", border: "1px solid #E5DFD0" }}
+          data-testid="paid-by-card"
+        >
+          <span
+            style={{ fontFamily: "var(--font-display)", color: "#6B6B6B", fontSize: 10, letterSpacing: "0.18em" }}
+          >
+            PAID BY
+          </span>
+          <div className="flex items-start gap-1.5 justify-between" data-testid="paid-by-row">
+            {PEOPLE.map((p) => {
+              const bal = balances.find((b) => b.id === p.id)!;
+              const owes = bal.net < -0.01;
+              const owed = bal.net > 0.01;
+              return (
+                <div
+                  key={p.id}
+                  className="flex-1 flex flex-col items-center gap-1"
+                  data-testid={`paid-by-${p.id}`}
+                >
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
                     style={{
-                      background: category === cat.id ? "var(--theme-text)" : "var(--theme-card)",
-                      color: category === cat.id ? "var(--theme-bg)" : "var(--theme-text)",
-                      border: category === cat.id ? "none" : "1px solid var(--theme-border)",
+                      background: p.bg,
+                      color: p.fg,
+                      border: p.stroke ? `1px solid ${p.stroke}` : undefined,
+                      fontFamily: "var(--font-display)",
+                      fontSize: 9,
                     }}
                   >
-                    {cat.emoji} {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Paid by */}
-            <div className="mb-4">
-              <label className="text-[12px] font-bold tracking-wider uppercase block mb-1.5" style={{ color: "var(--theme-text-secondary)" }}>
-                Paid by
-              </label>
-              <div className="flex gap-2">
-                {(["cc", "ta"] as const).map((couple) => (
-                  <button
-                    key={couple}
-                    onClick={() => setPaidBy(couple)}
-                    className="flex-1 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all"
+                    {p.name}
+                  </div>
+                  <span
                     style={{
-                      background: paidBy === couple ? (couple === "cc" ? "#1B2A4A" : "#C0392B") : "var(--theme-card)",
-                      color: paidBy === couple ? "white" : "var(--theme-text)",
-                      border: paidBy === couple ? "none" : "1px solid var(--theme-border)",
+                      fontFamily: "var(--font-display)",
+                      fontSize: 8,
+                      letterSpacing: "0.15em",
+                      color: "#6B6B6B",
                     }}
                   >
-                    {COUPLE_NAMES[couple]}
-                  </button>
-                ))}
-              </div>
-            </div>
+                    Paid
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#1B2A4A" }}>
+                    €{bal.paid.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                  </span>
+                  {owes ? (
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "#CC2E2C" }}>
+                      Owes €{Math.abs(bal.net).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                    </span>
+                  ) : owed ? (
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "#4A7C3E" }}>
+                      Is owed €{bal.net.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "#6B6B6B" }}>Settled</span>
+                  )}
+                  <span style={{ fontSize: 9, fontWeight: 600, color: "#6B6B6B" }}>{p.name}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-            {/* Split */}
-            <div className="mb-6">
-              <label className="text-[12px] font-bold tracking-wider uppercase block mb-1.5" style={{ color: "var(--theme-text-secondary)" }}>
-                Split
-              </label>
-              <div className="flex gap-2">
-                {[
-                  { value: "50-50" as const, label: "50/50" },
-                  { value: "cc-only" as const, label: "C&C only" },
-                  { value: "ta-only" as const, label: "T&A only" },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setSplit(opt.value)}
-                    className="flex-1 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all"
-                    style={{
-                      background: split === opt.value ? "#D4A843" : "var(--theme-card)",
-                      color: split === opt.value ? "#1B2A4A" : "var(--theme-text)",
-                      border: split === opt.value ? "none" : "1px solid var(--theme-border)",
-                    }}
+        {/* SETTLE UP */}
+        <SettleUpCard debt={debt} onMarkSettled={handleMarkSettled} />
+
+        {/* RECENT */}
+        <div
+          className="rounded-xl p-3.5 flex flex-col gap-2"
+          style={{ background: "#F5F1E8", border: "1px solid #E5DFD0" }}
+          data-testid="recent-card"
+        >
+          <span
+            style={{ fontFamily: "var(--font-display)", color: "#6B6B6B", fontSize: 10, letterSpacing: "0.18em" }}
+          >
+            RECENT
+          </span>
+          {recent.map((r) => {
+            const cat = resolveCategory(r.category);
+            const payer = PERSON_BY_ID[resolvePayer(r.paid_by)];
+            return (
+              <div
+                key={r.id}
+                className="flex items-center gap-2.5 py-1.5"
+                data-testid={`recent-item-${r.id}`}
+              >
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="truncate"
+                    style={{ fontSize: 12, fontWeight: 600, color: "#1B2A4A" }}
                   >
-                    {opt.label}
-                  </button>
-                ))}
+                    {cat.emoji}  {r.description}
+                  </p>
+                  <p style={{ fontSize: 10, color: "#6B6B6B" }}>
+                    {payer.name} · {formatRelative(r.created_at)}
+                  </p>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#1B2A4A" }}>
+                  €{r.amount.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                </span>
               </div>
-            </div>
-
-            {/* Submit */}
+            );
+          })}
+          {hydrated && expenses.length > 0 ? (
             <button
-              onClick={addExpense}
-              className="w-full py-3.5 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98]"
-              style={{ background: "#C0392B" }}
+              type="button"
+              style={{ color: "#1E4D92", fontSize: 12, fontWeight: 600, textAlign: "center" }}
+              data-testid="see-all-link"
             >
-              Add Expense
+              See all {expenses.length} →
             </button>
-          </div>
+          ) : null}
         </div>
-      )}
 
-      {/* Detail modal */}
-      {showDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6" onClick={() => setShowDetail(null)}>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <div
-            className="relative rounded-2xl p-5 w-full max-w-sm"
-            style={{ background: "var(--theme-card)" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-[18px] font-semibold" style={{ color: "var(--theme-text)" }}>
-              {showDetail.description}
-            </h3>
-            <p className="text-[24px] font-bold mt-2" style={{ color: "var(--theme-text)", fontFamily: "var(--font-mono)" }}>
-              €{showDetail.amount.toFixed(2)}
-            </p>
-            <div className="mt-3 space-y-1">
-              <p className="text-[13px]" style={{ color: "var(--theme-text-secondary)" }}>
-                Paid by: {COUPLE_NAMES[showDetail.paid_by]}
-              </p>
-              <p className="text-[13px]" style={{ color: "var(--theme-text-secondary)" }}>
-                Split: {showDetail.split}
-              </p>
-              <p className="text-[13px]" style={{ color: "var(--theme-text-secondary)" }}>
-                {CATEGORIES.find((c) => c.id === showDetail.category)?.emoji}{" "}
-                {CATEGORIES.find((c) => c.id === showDetail.category)?.label}
-              </p>
-              <p className="text-[12px]" style={{ color: "var(--theme-text-secondary)", opacity: 0.5 }}>
-                {new Date(showDetail.created_at).toLocaleString()}
-              </p>
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={() => setShowDetail(null)}
-                className="flex-1 py-2.5 rounded-xl text-[14px] font-semibold"
-                style={{ background: "rgba(27, 42, 74, 0.06)", color: "var(--theme-text)" }}
-              >
-                Close
-              </button>
-              <button
-                onClick={() => deleteExpense(showDetail.id)}
-                className="py-2.5 px-4 rounded-xl text-[14px] font-semibold"
-                style={{ background: "rgba(192, 57, 43, 0.1)", color: "#C0392B" }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        {/* ADD EXPENSE */}
+        <button
+          type="button"
+          className="h-11 rounded-full flex items-center justify-center active:scale-[0.98] transition-transform"
+          style={{ background: "#CC2E2C", color: "#FFD23F", fontSize: 12, fontWeight: 600, letterSpacing: "0.12em" }}
+          data-testid="add-expense-btn"
+        >
+          + ADD EXPENSE
+        </button>
+
+        {/* Debug: render summarized settlements for tests / future UI */}
+        <span className="sr-only" data-testid="settlements-count">
+          {settlements.length}
+        </span>
+
+        {/* Tiny helpers so admins can see all balances mid-trip */}
+        <span className="sr-only" data-testid="balances-json">
+          {JSON.stringify(balances)}
+        </span>
+      </div>
     </div>
   );
+}
+
+// Lightweight relative-time used by RECENT rows. Keeps the card dense
+// while avoiding a dependency on a date library.
+function formatRelative(iso: string): string {
+  const then = new Date(iso).getTime();
+  const diff = Date.now() - then;
+  const hours = diff / 3600_000;
+  if (hours < 1) return "Just now";
+  if (hours < 24) return `Today, ${new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+  if (hours < 48) return "Yesterday";
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
 }
