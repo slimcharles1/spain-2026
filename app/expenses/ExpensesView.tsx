@@ -29,6 +29,7 @@ import {
   type ExpenseRow,
 } from "@/lib/expense-data";
 import SettleUpCard from "@/components/SettleUpCard";
+import AddExpenseModal from "./AddExpenseModal";
 
 interface Props {
   initialExpenses: ExpenseRow[];
@@ -36,6 +37,7 @@ interface Props {
 
 export default function ExpensesView({ initialExpenses }: Props) {
   const [expenses, setExpenses] = useState<ExpenseRow[]>(initialExpenses);
+  const [addOpen, setAddOpen] = useState(false);
 
   const total = totalSpent(expenses);
   const remaining = Math.max(0, TRIP_BUDGET_EUR - total);
@@ -69,6 +71,15 @@ export default function ExpensesView({ initialExpenses }: Props) {
       sb.from("expenses").insert(settlementRow).then(() => {});
     }
   }, [debt]);
+
+  const handleAddExpense = useCallback((row: ExpenseRow) => {
+    setExpenses((prev) => [row, ...prev]);
+    setAddOpen(false);
+    const sb = getSupabase();
+    if (sb) {
+      sb.from("expenses").insert(row).then(() => {});
+    }
+  }, []);
 
   // Recent = 5 most-recent non-settlement rows.
   const recent = expenses
@@ -347,6 +358,7 @@ export default function ExpensesView({ initialExpenses }: Props) {
         {/* ADD EXPENSE */}
         <button
           type="button"
+          onClick={() => setAddOpen(true)}
           className="h-11 rounded-full flex items-center justify-center active:scale-[0.98] transition-transform"
           style={{
             background: "#CC2E2C",
@@ -359,6 +371,12 @@ export default function ExpensesView({ initialExpenses }: Props) {
         >
           + ADD EXPENSE
         </button>
+
+        <AddExpenseModal
+          open={addOpen}
+          onClose={() => setAddOpen(false)}
+          onSubmit={handleAddExpense}
+        />
 
         {/* Debug: render summarized settlements for tests / future UI */}
         <span className="sr-only" data-testid="settlements-count">
