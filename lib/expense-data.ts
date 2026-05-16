@@ -187,6 +187,63 @@ export function topDebt(expenses: ExpenseRow[]): Debt | null {
   return settlements[0] ?? null;
 }
 
+// ---------- Couple-level settlement ----------
+//
+// The trip is two couples (CC = Charles+Carly, TA = Tony+Ang) who settle as
+// units, not individuals. Per-person balances are still useful for the
+// "paid by" totals, but the SETTLE UP card and per-card owe/owed lines
+// reflect the couple's position — partners don't owe each other.
+
+export type CoupleId = "cc" | "ta";
+
+export interface Couple {
+  id: CoupleId;
+  label: string;
+  members: PersonId[];
+}
+
+export const COUPLES: Record<CoupleId, Couple> = {
+  cc: { id: "cc", label: "Charles & Carly", members: ["charles", "carly"] },
+  ta: { id: "ta", label: "Tony & Ang", members: ["tony", "ang"] },
+};
+
+export interface CoupleBalance {
+  id: CoupleId;
+  paid: number;
+  share: number;
+  net: number; // paid - share (>0 owed, <0 owes)
+}
+
+export interface CoupleDebt {
+  from: CoupleId;
+  to: CoupleId;
+  amount: number;
+}
+
+/** Roll up per-person balances into the two couples. */
+export function computeCoupleBalances(expenses: ExpenseRow[]): CoupleBalance[] {
+  const personBalances = computeBalances(expenses);
+  return (Object.keys(COUPLES) as CoupleId[]).map((id) => {
+    const members = personBalances.filter((b) => PERSON_BY_ID[b.id].couple === id);
+    const paid = members.reduce((s, b) => s + b.paid, 0);
+    const share = members.reduce((s, b) => s + b.share, 0);
+    return {
+      id,
+      paid: round2(paid),
+      share: round2(share),
+      net: round2(paid - share),
+    };
+  });
+}
+
+/** Single transfer that settles both couples (null when within €0.01). */
+export function topCoupleDebt(expenses: ExpenseRow[]): CoupleDebt | null {
+  const [a, b] = computeCoupleBalances(expenses);
+  if (Math.abs(a.net) < 0.01) return null;
+  const [creditor, debtor] = a.net > 0 ? [a, b] : [b, a];
+  return { from: debtor.id, to: creditor.id, amount: round2(creditor.net) };
+}
+
 /** Aggregate amounts per category bucket, sorted by amount desc. */
 export function sumByCategory(expenses: ExpenseRow[]): Array<{ category: ExpenseCategory; amount: number }> {
   const sums = new Map<string, number>();

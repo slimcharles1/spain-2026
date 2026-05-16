@@ -4,11 +4,11 @@
 // Matches Pencil node `Wep3t` inside G2Th2. When `debt` is null the card
 // renders a settled-up state instead.
 
-import type { Debt } from "@/lib/expense-data";
-import { PERSON_BY_ID } from "@/lib/expense-data";
+import type { CoupleDebt } from "@/lib/expense-data";
+import { COUPLES } from "@/lib/expense-data";
 
 interface Props {
-  debt: Debt | null;
+  debt: CoupleDebt | null;
   onMarkSettled?: () => void;
 }
 
@@ -40,8 +40,8 @@ export default function SettleUpCard({ debt, onMarkSettled }: Props) {
     );
   }
 
-  const from = PERSON_BY_ID[debt.from];
-  const to = PERSON_BY_ID[debt.to];
+  const from = COUPLES[debt.from];
+  const to = COUPLES[debt.to];
 
   return (
     <div
@@ -60,7 +60,7 @@ export default function SettleUpCard({ debt, onMarkSettled }: Props) {
         style={{ fontFamily: "var(--font-body)", color: "#1B2A4A" }}
         data-testid="settle-up-body"
       >
-        {from.name} owes {to.name} €{debt.amount.toFixed(0)}
+        {from.label} owe {to.label} €{debt.amount.toFixed(0)}
       </p>
       <button
         data-testid="mark-settled-btn"
