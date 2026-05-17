@@ -86,11 +86,11 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50"
       style={{
-        background: "linear-gradient(180deg, rgba(255, 252, 245, 0.85) 0%, rgba(255, 252, 245, 0.98) 100%)",
+        background: "var(--theme-nav-surface)",
         backdropFilter: "blur(20px) saturate(1.4)",
         WebkitBackdropFilter: "blur(20px) saturate(1.4)",
-        borderTop: "1px solid rgba(212, 168, 67, 0.15)",
-        boxShadow: "0 -4px 20px rgba(27, 42, 74, 0.04)",
+        borderTop: "1px solid var(--theme-nav-border)",
+        boxShadow: "var(--theme-nav-shadow)",
       }}
     >
       <div className="flex items-center justify-around max-w-lg mx-auto px-1" style={{ paddingBottom: "env(safe-area-inset-bottom)", height: "calc(64px + env(safe-area-inset-bottom))" }}>

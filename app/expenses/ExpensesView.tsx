@@ -16,15 +16,17 @@
 import { useCallback, useMemo, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import {
+  COUPLES,
   PEOPLE,
   PERSON_BY_ID,
   TRIP_BUDGET_EUR,
   computeBalances,
+  computeCoupleBalances,
   computeSettlements,
   resolveCategory,
   resolvePayer,
   sumByCategory,
-  topDebt,
+  topCoupleDebt,
   totalSpent,
   type ExpenseRow,
 } from "@/lib/expense-data";
@@ -46,21 +48,25 @@ export default function ExpensesView({ initialExpenses }: Props) {
   const byCategory = useMemo(() => sumByCategory(expenses), [expenses]);
   const balances = useMemo(() => computeBalances(expenses), [expenses]);
   const settlements = useMemo(() => computeSettlements(balances), [balances]);
-  const debt = useMemo(() => topDebt(expenses), [expenses]);
+  const coupleBalances = useMemo(() => computeCoupleBalances(expenses), [expenses]);
+  const debt = useMemo(() => topCoupleDebt(expenses), [expenses]);
   const maxCategoryAmount = Math.max(1, ...byCategory.map((b) => b.amount));
 
   const hasExpenses = expenses.length > 0;
 
   const handleMarkSettled = useCallback(() => {
     if (!debt) return;
+    // Synthetic row that zeroes the couple debt: debtor couple "pays"
+    // the creditor couple's share. Uses legacy couple ids so the read
+    // adapter in lib/expense-data.ts resolves both sides correctly.
+    const creditorSplit = debt.to === "cc" ? "cc-only" : "ta-only";
     const settlementRow: ExpenseRow = {
       id: `settle-${Date.now()}`,
       amount: debt.amount,
-      description: `Settlement · ${PERSON_BY_ID[debt.from].name} → ${PERSON_BY_ID[debt.to].name}`,
+      description: `Settlement · ${COUPLES[debt.from].label} → ${COUPLES[debt.to].label}`,
       category: "other",
       paid_by: debt.from,
-      // Only the creditor "consumes" the settlement, which zeroes the balance.
-      split: [debt.to],
+      split: creditorSplit,
       created_at: new Date().toISOString(),
     };
     setExpenses((prev) => [settlementRow, ...prev]);
@@ -229,8 +235,11 @@ export default function ExpensesView({ initialExpenses }: Props) {
           <div className="flex items-start gap-1.5 justify-between" data-testid="paid-by-row">
             {PEOPLE.map((p) => {
               const bal = balances.find((b) => b.id === p.id)!;
-              const owes = bal.net < -0.01;
-              const owed = bal.net > 0.01;
+              // Owe/owed displays at the couple level — partners share
+              // finances, so each card shows the couple's net position.
+              const coupleBal = coupleBalances.find((b) => b.id === p.couple)!;
+              const owes = coupleBal.net < -0.01;
+              const owed = coupleBal.net > 0.01;
               return (
                 <div
                   key={p.id}
@@ -270,11 +279,11 @@ export default function ExpensesView({ initialExpenses }: Props) {
                   {hasExpenses ? (
                     owes ? (
                       <span style={{ fontSize: 10, fontWeight: 600, color: "#CC2E2C" }}>
-                        Owes €{Math.abs(bal.net).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                        Owes €{Math.abs(coupleBal.net).toLocaleString("en-US", { maximumFractionDigits: 0 })}
                       </span>
                     ) : owed ? (
                       <span style={{ fontSize: 10, fontWeight: 600, color: "#4A7C3E" }}>
-                        Is owed €{bal.net.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                        Is owed €{coupleBal.net.toLocaleString("en-US", { maximumFractionDigits: 0 })}
                       </span>
                     ) : (
                       <span style={{ fontSize: 10, fontWeight: 600, color: "#6B6B6B" }}>Settled</span>

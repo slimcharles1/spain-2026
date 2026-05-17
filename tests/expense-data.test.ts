@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   computeBalances,
+  computeCoupleBalances,
   computeSettlements,
   resolveCategory,
   resolveConsumers,
   resolvePayer,
   sumByCategory,
+  topCoupleDebt,
   topDebt,
   totalSpent,
   type ExpenseRow,
@@ -119,6 +121,52 @@ describe("computeSettlements — greedy min-transfer", () => {
     expect(debt).not.toBeNull();
     expect(debt!.to).toBe("tony");
     expect(debt!.amount).toBeGreaterThan(0);
+  });
+});
+
+describe("couple-level settlement", () => {
+  it("rolls per-person paid/share/net into the two couples", () => {
+    const rows = [mkRow({ amount: 200, paid_by: "charles" })];
+    const couples = computeCoupleBalances(rows);
+    const cc = couples.find((c) => c.id === "cc")!;
+    const ta = couples.find((c) => c.id === "ta")!;
+    expect(cc.paid).toBe(200);
+    expect(cc.share).toBe(100); // Charles+Carly each consume 50
+    expect(cc.net).toBe(100);
+    expect(ta.paid).toBe(0);
+    expect(ta.share).toBe(100);
+    expect(ta.net).toBe(-100);
+  });
+
+  it("intra-couple spending (cc-only split) nets to zero at couple level", () => {
+    const rows = [mkRow({ amount: 80, paid_by: "charles", split: "cc-only" })];
+    const couples = computeCoupleBalances(rows);
+    for (const c of couples) expect(c.net).toBe(0);
+  });
+
+  it("topCoupleDebt returns one transfer between couples", () => {
+    const rows = [mkRow({ amount: 200, paid_by: "charles" })];
+    const debt = topCoupleDebt(rows);
+    expect(debt).not.toBeNull();
+    expect(debt!.from).toBe("ta");
+    expect(debt!.to).toBe("cc");
+    expect(debt!.amount).toBe(100);
+  });
+
+  it("topCoupleDebt is null when couples are settled", () => {
+    const rows: ExpenseRow[] = [
+      mkRow({ amount: 100, paid_by: "charles" }),
+      mkRow({ amount: 100, paid_by: "tony" }),
+    ];
+    expect(topCoupleDebt(rows)).toBeNull();
+  });
+
+  it("ignores partner-to-partner balances within a couple", () => {
+    // Charles pays €100 for a 4-way meal: per-person settlements include
+    // Carly→Charles €25, but the couple debt only reflects what TA owes CC.
+    const rows = [mkRow({ amount: 100, paid_by: "charles" })];
+    const debt = topCoupleDebt(rows);
+    expect(debt!.amount).toBe(50); // €25 from Tony + €25 from Ang
   });
 });
 
