@@ -44,11 +44,20 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
 
   const activeTheme = override ?? theme;
 
+  // Toggle the theme class on <html> so it cascades to <body>'s background
+  // and every descendant — not just an inner wrapper div.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (activeTheme === "real-madrid") {
+      root.classList.add("theme-real-madrid");
+    } else {
+      root.classList.remove("theme-real-madrid");
+    }
+  }, [activeTheme]);
+
   return (
     <ThemeContext.Provider value={{ theme: activeTheme, setThemeOverride: setOverride }}>
-      <div className={activeTheme === "real-madrid" ? "theme-real-madrid" : ""}>
-        {children}
-      </div>
+      {children}
     </ThemeContext.Provider>
   );
 }
