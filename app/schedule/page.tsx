@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { tripDays, type ScheduleEvent } from "@/lib/schedule-data";
 import {
@@ -63,6 +63,9 @@ function useMinutelyTick(): string {
     typeof window === "undefined" ? "00:00" : getSpainTimeString()
   );
   useEffect(() => {
+    // Hydrate to the real Spain time after mount — the initial state is
+    // "00:00" on the server to avoid a clock hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTime(getSpainTimeString());
     const id = setInterval(() => setTime(getSpainTimeString()), 60_000);
     return () => clearInterval(id);
@@ -127,18 +130,10 @@ function ScheduleContent() {
   const day = tripDays.find((d) => d.dayNumber === selectedDay) ?? tripDays[0];
   const isToday = day.date === getSpainDateString();
 
-  const partitioned = useMemo(() => {
-    if (!isToday) {
-      return partitionDay(day.events, "00:00");
-    }
-    return partitionDay(day.events, now);
-  }, [day.events, isToday, now]);
-
-  const pickerDays = useMemo(toPickerDays, []);
-  const route = useMemo(
-    () => getRouteForDay(day.dayNumber, day.events, partitioned.now),
-    [day.dayNumber, day.events, partitioned.now]
-  );
+  // React Compiler handles memoization of these derived values.
+  const partitioned = partitionDay(day.events, isToday ? now : "00:00");
+  const pickerDays = toPickerDays();
+  const route = getRouteForDay(day.dayNumber, day.events, partitioned.now);
 
   const handleTap = (event: ScheduleEvent) => {
     // EventCard dispatches CustomEvent('open-event'). Hook for telemetry.
