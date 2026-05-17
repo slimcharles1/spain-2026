@@ -30,9 +30,12 @@ export default function BookingsPage() {
   const [animatingTier, setAnimatingTier] = useState<BookingTier | null>(null);
   const [confettiTier, setConfettiTier] = useState<BookingTier | null>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount. Initial state is `{}` on both server
+  // and client to keep hydration consistent; the real values are pulled in
+  // post-mount, so the two setStates here are intentional.
   useEffect(() => {
     const loaded = loadBookings();
+    /* eslint-disable react-hooks/set-state-in-effect */
     setBookings(loaded);
 
     // Auto-collapse tiers that are already complete
@@ -44,6 +47,7 @@ export default function BookingsPage() {
       if (allChecked) autoCollapse.add(tier);
     }
     setCollapsedTiers(autoCollapse);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   // Sync to Supabase
@@ -348,16 +352,20 @@ export default function BookingsPage() {
 
 // Simple CSS confetti burst component
 function ConfettiBurst({ color }: { color: string }) {
-  const particles = Array.from({ length: 16 }, (_, i) => ({
-    id: i,
-    left: 40 + Math.random() * 20,
-    delay: Math.random() * 0.3,
-    duration: 0.6 + Math.random() * 0.4,
-    angle: (i / 16) * 360,
-    distance: 60 + Math.random() * 80,
-    size: 4 + Math.random() * 4,
-    color: i % 3 === 0 ? color : i % 3 === 1 ? "#D4A843" : "#1B2A4A",
-  }));
+  // Compute random particle layout once on mount; recomputing on every render
+  // would violate the component-purity rule (Math.random is impure).
+  const [particles] = useState(() =>
+    Array.from({ length: 16 }, (_, i) => ({
+      id: i,
+      left: 40 + Math.random() * 20,
+      delay: Math.random() * 0.3,
+      duration: 0.6 + Math.random() * 0.4,
+      angle: (i / 16) * 360,
+      distance: 60 + Math.random() * 80,
+      size: 4 + Math.random() * 4,
+      color: i % 3 === 0 ? color : i % 3 === 1 ? "#D4A843" : "#1B2A4A",
+    })),
+  );
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50">

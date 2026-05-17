@@ -26,6 +26,10 @@ export function StatusBar({ time, color = colors.ink }: StatusBarProps) {
 
   useEffect(() => {
     if (time) return;
+    // Post-hydration initial set: server renders "" to avoid a clock-mismatch
+    // hydration warning, then the client populates with the real time and a
+    // tick interval. The synchronous setNow here is intentional.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNow(format24(new Date()));
     const id = setInterval(() => setNow(format24(new Date())), 30_000);
     return () => clearInterval(id);

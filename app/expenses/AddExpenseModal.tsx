@@ -23,49 +23,53 @@ const SPLIT_OPTIONS: Array<{ id: LegacySplit; label: string; sub: string }> = [
   { id: "ta-only", label: "Tony & Ang", sub: "Just TA" },
 ];
 
+// Wrapper mounts the modal body only while `open` is true so state
+// (and the per-mount lazy `paidBy` default) refreshes on every open.
 export default function AddExpenseModal({ open, onClose, onSubmit }: Props) {
+  if (!open) return null;
+  return <AddExpenseModalContent onClose={onClose} onSubmit={onSubmit} />;
+}
+
+interface ContentProps {
+  onClose: () => void;
+  onSubmit: (row: ExpenseRow) => void;
+}
+
+function AddExpenseModalContent({ onClose, onSubmit }: ContentProps) {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<string>("dining");
-  const [paidBy, setPaidBy] = useState<PersonId>("charles");
+  const [paidBy, setPaidBy] = useState<PersonId>(
+    () => readPersona() ?? "charles",
+  );
   const [split, setSplit] = useState<LegacySplit>("50-50");
   const [submitting, setSubmitting] = useState(false);
 
   const amountInputRef = useRef<HTMLInputElement>(null);
 
-  // Default paid_by to current persona on open, and reset other fields.
+  // Focus the amount field on mount so the mobile keyboard pops up.
   useEffect(() => {
-    if (!open) return;
-    const persona = readPersona() ?? "charles";
-    setPaidBy(persona);
-    setAmount("");
-    setDescription("");
-    setCategory("dining");
-    setSplit("50-50");
-    setSubmitting(false);
-    // Focus amount on next tick so the keyboard pops up on mobile.
-    requestAnimationFrame(() => amountInputRef.current?.focus());
-  }, [open]);
+    const id = requestAnimationFrame(() => amountInputRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, []);
 
-  // Escape closes
+  // Escape closes the modal.
   useEffect(() => {
-    if (!open) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [open, onClose]);
+  }, [onClose]);
 
-  // Body scroll lock while open
+  // Body scroll lock while open.
   useEffect(() => {
-    if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, []);
 
   const parsedAmount = useMemo(() => {
     const n = Number(amount.replace(",", "."));
@@ -90,8 +94,6 @@ export default function AddExpenseModal({ open, onClose, onSubmit }: Props) {
     };
     onSubmit(row);
   }, [canSubmit, parsedAmount, description, category, paidBy, split, onSubmit]);
-
-  if (!open) return null;
 
   return (
     <div

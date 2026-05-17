@@ -22,6 +22,10 @@ export default function ServiceWorkerRegistrar() {
     const goOffline = () => setOffline(true);
     const goOnline = () => setOffline(false);
 
+    // Initial offline state is read from navigator post-mount. Lazy-initialising
+    // useState would cause an SSR/client hydration mismatch (navigator is
+    // undefined on the server), so we read after hydration instead.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOffline(!navigator.onLine);
     window.addEventListener("offline", goOffline);
     window.addEventListener("online", goOnline);

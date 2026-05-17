@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { flightInfo, infoSections } from "@/lib/info-data";
 import AppleMapsButton from "./AppleMapsButton";
 
@@ -25,13 +25,16 @@ interface InfoModalProps {
   onClose: () => void;
 }
 
+// Wrapper mounts the body only while open so confirmations get freshly
+// loaded from localStorage on every open via the lazy useState initializer.
 export default function InfoModal({ open, onClose }: InfoModalProps) {
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-  const [myConfs, setMyConfs] = useState<MyConfirmations>({});
+  if (!open) return null;
+  return <InfoModalContent onClose={onClose} />;
+}
 
-  useEffect(() => {
-    if (open) setMyConfs(loadConfirmations());
-  }, [open]);
+function InfoModalContent({ onClose }: { onClose: () => void }) {
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [myConfs, setMyConfs] = useState<MyConfirmations>(loadConfirmations);
 
   const updateConf = (key: string, value: string) => {
     setMyConfs((prev) => {
@@ -40,8 +43,6 @@ export default function InfoModal({ open, onClose }: InfoModalProps) {
       return next;
     });
   };
-
-  if (!open) return null;
 
   const toggle = (id: string) => {
     setCollapsed((prev) => {

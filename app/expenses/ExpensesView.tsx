@@ -13,7 +13,7 @@
 // four people with no owes/owed line, and SETTLE UP shows the green
 // "All squared up" confirmation.
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import {
   COUPLES,
@@ -45,11 +45,13 @@ export default function ExpensesView({ initialExpenses }: Props) {
   const remaining = Math.max(0, TRIP_BUDGET_EUR - total);
   const usedPct = Math.min(100, Math.round((total / TRIP_BUDGET_EUR) * 100));
 
-  const byCategory = useMemo(() => sumByCategory(expenses), [expenses]);
-  const balances = useMemo(() => computeBalances(expenses), [expenses]);
-  const settlements = useMemo(() => computeSettlements(balances), [balances]);
-  const coupleBalances = useMemo(() => computeCoupleBalances(expenses), [expenses]);
-  const debt = useMemo(() => topCoupleDebt(expenses), [expenses]);
+  // React Compiler handles memoization of these derived values; manual
+  // useMemo wrappers blocked the compiler from optimizing this function.
+  const byCategory = sumByCategory(expenses);
+  const balances = computeBalances(expenses);
+  const settlements = computeSettlements(balances);
+  const coupleBalances = computeCoupleBalances(expenses);
+  const debt = topCoupleDebt(expenses);
   const maxCategoryAmount = Math.max(1, ...byCategory.map((b) => b.amount));
 
   const hasExpenses = expenses.length > 0;

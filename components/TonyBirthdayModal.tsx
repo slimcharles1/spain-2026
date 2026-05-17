@@ -74,31 +74,7 @@ export default function TonyBirthdayModal() {
       />
 
       {/* Confetti */}
-      {showConfetti && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 70 }).map((_, i) => {
-            const isStreamer = i % 4 === 0;
-            const drift = (Math.random() - 0.5) * 60;
-            const spin = 360 + Math.random() * 720;
-            return (
-              <div
-                key={i}
-                className={`absolute ${isStreamer ? "" : i % 2 === 0 ? "rounded-full" : "rounded-sm"}`}
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: -10,
-                  width: isStreamer ? 3 : 5 + Math.random() * 5,
-                  height: isStreamer ? 10 + Math.random() * 6 : 5 + Math.random() * 5,
-                  background: i % 3 === 0 ? "#FEBE10" : i % 3 === 1 ? "#0A1128" : "#FFFFFF",
-                  ["--drift" as string]: `${drift}px`,
-                  ["--spin" as string]: `${spin}deg`,
-                  animation: `confetti-drift ${1.2 + Math.random() * 1}s ease-out ${Math.random() * 0.8}s forwards`,
-                }}
-              />
-            );
-          })}
-        </div>
-      )}
+      {showConfetti && <Confetti />}
 
       {/* Modal card */}
       <div
@@ -149,6 +125,48 @@ export default function TonyBirthdayModal() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// Particle layout is randomised once on mount; computing Math.random
+// during render would violate the component-purity rule.
+function Confetti() {
+  const [particles] = useState(() =>
+    Array.from({ length: 70 }, (_, i) => {
+      const isStreamer = i % 4 === 0;
+      return {
+        i,
+        isStreamer,
+        drift: (Math.random() - 0.5) * 60,
+        spin: 360 + Math.random() * 720,
+        left: Math.random() * 100,
+        width: isStreamer ? 3 : 5 + Math.random() * 5,
+        height: isStreamer ? 10 + Math.random() * 6 : 5 + Math.random() * 5,
+        duration: 1.2 + Math.random(),
+        delay: Math.random() * 0.8,
+      };
+    }),
+  );
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {particles.map((p) => (
+        <div
+          key={p.i}
+          className={`absolute ${p.isStreamer ? "" : p.i % 2 === 0 ? "rounded-full" : "rounded-sm"}`}
+          style={{
+            left: `${p.left}%`,
+            top: -10,
+            width: p.width,
+            height: p.height,
+            background: p.i % 3 === 0 ? "#FEBE10" : p.i % 3 === 1 ? "#0A1128" : "#FFFFFF",
+            ["--drift" as string]: `${p.drift}px`,
+            ["--spin" as string]: `${p.spin}deg`,
+            animation: `confetti-drift ${p.duration}s ease-out ${p.delay}s forwards`,
+          }}
+        />
+      ))}
     </div>
   );
 }
