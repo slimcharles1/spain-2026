@@ -320,9 +320,10 @@ export const tripDays: TripDay[] = [
     ],
   },
 
-  // ===== DAY 3 — Mon May 18 — Seville Culture =====
-  // Swapped with Day 4 on May 17: Mondays close Bodegas Lustau and Eslava, so
-  // doing Seville culture today and Sherry/Cádiz tomorrow avoids both closures.
+  // ===== DAY 3 — Mon May 18 — Seville Culture (day) + Eslava (night) =====
+  // Daytime swapped with Day 4: doing Seville sightseeing today and Sherry/Cádiz
+  // tomorrow avoids the Mon closure at Bodegas Lustau. Nighttime kept on its
+  // original day because the Tue flamenco venue is closed Mondays.
   {
     dayNumber: 3,
     date: "2026-05-18",
@@ -330,7 +331,7 @@ export const tripDays: TripDay[] = [
     title: "Seville: Culture & Tapas",
     city: "Seville",
     emoji: "🏛️",
-    summary: "Alcázar, the Cathedral, crossing into Triana, and a vermut-to-flamenco evening.",
+    summary: "Alcázar, the Cathedral, crossing into Triana, then a late tapas dinner at Eslava.",
     events: [
       {
         id: "d3-breakfast",
@@ -401,45 +402,27 @@ export const tripDays: TripDay[] = [
         durationMinutes: 120,
       },
       {
-        id: "d3-vermut",
-        dayNumber: 3,
-        date: "2026-05-18",
-        time: "19:00",
-        title: "Vermut at Antiguo Bar Abadía",
-        description: "A neighborhood vermutería in Santa Cruz. House-made vermouth on tap, marinated olives, anchovies.",
-        location: { name: "Antiguo Bar Abadía", query: "Antiguo Bar Abadia Sevilla", lat: 37.3867, lng: -5.9886 },
-        type: "wine",
-        durationMinutes: 90,
-      },
-      {
-        id: "d3-flamenco",
-        dayNumber: 3,
-        date: "2026-05-18",
-        time: "20:30",
-        title: "Flamenco (optional)",
-        description: "La Carbonería is free in an old coal yard. Or book Casa de la Memoria for an intimate seated show (~€22).",
-        location: { name: "La Carbonería", address: "C. Levíes, 18, 41004 Sevilla", lat: 37.3843, lng: -5.9871 },
-        type: "culture",
-        durationMinutes: 60,
-      },
-      {
-        id: "d3-dinner",
+        id: "d3-eslava",
         dayNumber: 3,
         date: "2026-05-18",
         time: "21:30",
-        title: "Dinner: Casa Robles",
-        description: "Elegant but unpretentious. Excellent seafood, Ibérico pork, and a deep wine list. A proper sit-down in old town.",
-        location: { name: "Casa Robles", address: "C. Álvarez Quintero, 58, 41004 Sevilla", lat: 37.3878, lng: -5.9936 },
+        title: "Dinner: Eslava",
+        description: "One of Seville's most acclaimed tapas restaurants in San Lorenzo. The slow-cooked egg with truffle and mushroom is legendary.",
+        tip: "No reservations for the bar. Arrive at 9 PM to snag a spot. Confirm Monday hours before walking over — some sources list Eslava as closed Mondays.",
+        location: { name: "Eslava", address: "C. Eslava, 3, 41002 Sevilla", lat: 37.3932, lng: -6.0013 },
         type: "dining",
         highlight: true,
-        durationMinutes: 120,
+        durationMinutes: 90,
       },
     ],
   },
 
-  // ===== DAY 4 — Tue May 19 — Sherry Triangle + Cádiz =====
-  // Swapped with Day 3 on May 17 — see Day 3 note. Lustau opens Tue-Sat, so
+  // ===== DAY 4 — Tue May 19 — Sherry Triangle + Cádiz (day) + Seville (night) =====
+  // Daytime swapped with Day 3 — see Day 3 note. Lustau opens Tue-Sat, so
   // shifting the bodega tour here clears the original Monday-closed conflict.
+  // Vermut / flamenco / Casa Robles stay on Tuesday because the flamenco venue
+  // is closed Mondays. Evening times bumped ~2 hours later to fit after the
+  // Cádiz drive-back.
   {
     dayNumber: 4,
     date: "2026-05-19",
@@ -447,7 +430,7 @@ export const tripDays: TripDay[] = [
     title: "Sherry & Cádiz Beach",
     city: "Jerez / Cádiz",
     emoji: "🍷",
-    summary: "Sherry tasting in Jerez, then a long beach afternoon in Cádiz with sunset drinks over the Atlantic.",
+    summary: "Sherry tasting in Jerez, a long beach afternoon in Cádiz, then vermut, flamenco, and a sit-down dinner back in Seville.",
     events: [
       {
         id: "d4-breakfast",
@@ -553,14 +536,36 @@ export const tripDays: TripDay[] = [
         durationMinutes: 75,
       },
       {
-        id: "d4-eslava",
+        id: "d4-vermut",
         dayNumber: 4,
         date: "2026-05-19",
-        time: "21:30",
-        title: "Dinner: Eslava",
-        description: "One of Seville's most acclaimed tapas restaurants in San Lorenzo. The slow-cooked egg with truffle and mushroom is legendary.",
-        tip: "No reservations for the bar. Arrive at 9 PM to snag a spot.",
-        location: { name: "Eslava", address: "C. Eslava, 3, 41002 Sevilla", lat: 37.3932, lng: -6.0013 },
+        time: "21:00",
+        title: "Vermut at Antiguo Bar Abadía",
+        description: "A neighborhood vermutería in Santa Cruz. House-made vermouth on tap, marinated olives, anchovies. Quick stop after arriving back from Cádiz.",
+        location: { name: "Antiguo Bar Abadía", query: "Antiguo Bar Abadia Sevilla", lat: 37.3867, lng: -5.9886 },
+        type: "wine",
+        durationMinutes: 45,
+      },
+      {
+        id: "d4-flamenco",
+        dayNumber: 4,
+        date: "2026-05-19",
+        time: "22:00",
+        title: "Flamenco (optional)",
+        description: "La Carbonería is free in an old coal yard and runs late. Or book Casa de la Memoria for an intimate seated show (~€22).",
+        location: { name: "La Carbonería", address: "C. Levíes, 18, 41004 Sevilla", lat: 37.3843, lng: -5.9871 },
+        type: "culture",
+        durationMinutes: 60,
+      },
+      {
+        id: "d4-dinner",
+        dayNumber: 4,
+        date: "2026-05-19",
+        time: "23:00",
+        title: "Dinner: Casa Robles",
+        description: "Elegant but unpretentious. Excellent seafood, Ibérico pork, and a deep wine list. A proper sit-down for your last Seville night.",
+        tip: "Casa Robles' kitchen typically runs until midnight — call ahead to confirm a 23:00 arrival is OK.",
+        location: { name: "Casa Robles", address: "C. Álvarez Quintero, 58, 41004 Sevilla", lat: 37.3878, lng: -5.9936 },
         type: "dining",
         highlight: true,
         durationMinutes: 90,

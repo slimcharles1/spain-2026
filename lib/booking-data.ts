@@ -131,8 +131,8 @@ export const bookingItems: BookingItem[] = [
     id: "eslava",
     title: "Eslava",
     tier: "no-booking",
-    dateLabel: "Tue night",
-    notes: "Walk-in, arrive 9 PM",
+    dateLabel: "Mon night",
+    notes: "Walk-in, arrive 9 PM. Some sources list Eslava closed Mondays — confirm hours.",
     location: { name: "Eslava", query: "Eslava Sevilla" },
   },
   {
