@@ -402,27 +402,27 @@ export const tripDays: TripDay[] = [
         durationMinutes: 120,
       },
       {
-        id: "d3-eslava",
+        id: "d3-mamarracha",
         dayNumber: 3,
         date: "2026-05-18",
-        time: "21:30",
-        title: "Dinner: Eslava",
-        description: "One of Seville's most acclaimed tapas restaurants in San Lorenzo. The slow-cooked egg with truffle and mushroom is legendary.",
-        tip: "No reservations for the bar. Arrive at 9 PM to snag a spot. Confirm Monday hours before walking over — some sources list Eslava as closed Mondays.",
-        location: { name: "Eslava", address: "C. Eslava, 3, 41002 Sevilla", lat: 37.3932, lng: -6.0013 },
+        time: "20:45",
+        title: "Dinner: Mamarracha",
+        description: "Wood-fired tapas and brasas in a garden room — sister to Ovejas Negras. Casual but very good. Replaces Eslava (closed Mondays).",
+        tip: "Reservation confirmed at 20:45. Calle Hernando Colón 1, ~5 min walk from the hotel.",
+        location: { name: "Mamarracha", address: "C. Hernando Colón, 1, 41004 Sevilla", lat: 37.3868, lng: -5.9923 },
         type: "dining",
         highlight: true,
-        durationMinutes: 90,
+        durationMinutes: 105,
       },
     ],
   },
 
-  // ===== DAY 4 — Tue May 19 — Sherry Triangle + Cádiz (day) + Seville (night) =====
+  // ===== DAY 4 — Tue May 19 — Sherry Triangle + Cádiz (day) + Cañabota (night) =====
   // Daytime swapped with Day 3 — see Day 3 note. Lustau opens Tue-Sat, so
   // shifting the bodega tour here clears the original Monday-closed conflict.
-  // Vermut / flamenco / Casa Robles stay on Tuesday because the flamenco venue
-  // is closed Mondays. Evening times bumped ~2 hours later to fit after the
-  // Cádiz drive-back.
+  // Cañabota replaces Casa Robles for the last Seville night — only Michelin
+  // star open on Tue in Seville with a same-day slot when this got planned.
+  // Flamenco kept as a late optional cap.
   {
     dayNumber: 4,
     date: "2026-05-19",
@@ -430,7 +430,7 @@ export const tripDays: TripDay[] = [
     title: "Sherry & Cádiz Beach",
     city: "Jerez / Cádiz",
     emoji: "🍷",
-    summary: "Sherry tasting in Jerez, a long beach afternoon in Cádiz, then vermut, flamenco, and a sit-down dinner back in Seville.",
+    summary: "Sherry tasting in Jerez, a long beach afternoon in Cádiz, then a Michelin-starred dinner at Cañabota back in Seville.",
     events: [
       {
         id: "d4-breakfast",
@@ -536,39 +536,28 @@ export const tripDays: TripDay[] = [
         durationMinutes: 75,
       },
       {
-        id: "d4-vermut",
+        id: "d4-canabota",
         dayNumber: 4,
         date: "2026-05-19",
-        time: "21:00",
-        title: "Vermut at Antiguo Bar Abadía",
-        description: "A neighborhood vermutería in Santa Cruz. House-made vermouth on tap, marinated olives, anchovies. Quick stop after arriving back from Cádiz.",
-        location: { name: "Antiguo Bar Abadía", query: "Antiguo Bar Abadia Sevilla", lat: 37.3867, lng: -5.9886 },
-        type: "wine",
-        durationMinutes: 45,
+        time: "21:30",
+        title: "Dinner: Cañabota ⭐",
+        description: "Seville's Michelin-starred seafood counter — open kitchen, sustainable fish, tasting menu. Replaces Casa Robles for the last Seville night.",
+        tip: "Reservation confirmed at 21:30. Calle Orfila 3. Drop the rental in time to be at the table by 21:30 — no fashionably-late at a Michelin counter.",
+        location: { name: "Cañabota", address: "C. Orfila, 3, 41003 Sevilla", lat: 37.3939, lng: -5.9926 },
+        type: "dining",
+        highlight: true,
+        durationMinutes: 120,
       },
       {
         id: "d4-flamenco",
         dayNumber: 4,
         date: "2026-05-19",
-        time: "22:00",
-        title: "Flamenco (optional)",
-        description: "La Carbonería is free in an old coal yard and runs late. Or book Casa de la Memoria for an intimate seated show (~€22).",
+        time: "23:45",
+        title: "Flamenco at La Carbonería (optional)",
+        description: "Free flamenco in an old coal yard, runs until 3am — perfect post-dinner cap if you've still got energy. Wed morning is the Madrid drive, so don't push too late.",
         location: { name: "La Carbonería", address: "C. Levíes, 18, 41004 Sevilla", lat: 37.3843, lng: -5.9871 },
         type: "culture",
-        durationMinutes: 60,
-      },
-      {
-        id: "d4-dinner",
-        dayNumber: 4,
-        date: "2026-05-19",
-        time: "23:00",
-        title: "Dinner: Casa Robles",
-        description: "Elegant but unpretentious. Excellent seafood, Ibérico pork, and a deep wine list. A proper sit-down for your last Seville night.",
-        tip: "Casa Robles' kitchen typically runs until midnight — call ahead to confirm a 23:00 arrival is OK.",
-        location: { name: "Casa Robles", address: "C. Álvarez Quintero, 58, 41004 Sevilla", lat: 37.3878, lng: -5.9936 },
-        type: "dining",
-        highlight: true,
-        durationMinutes: 90,
+        durationMinutes: 45,
       },
     ],
   },

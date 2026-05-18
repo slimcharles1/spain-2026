@@ -58,6 +58,17 @@ export const bookingItems: BookingItem[] = [
     url: "https://alcazarsevilla.org",
     location: { name: "Real Alcázar", query: "Real Alcazar Sevilla" },
   },
+  {
+    id: "canabota",
+    title: "Cañabota ⭐ (Michelin)",
+    tier: "book-now",
+    date: "2026-05-19",
+    dateLabel: "Tue May 19, 21:30",
+    partySize: 4,
+    url: "https://canabota.es/en/",
+    notes: "Reservation confirmed at 21:30. Replaces Casa Robles for the last Seville night.",
+    location: { name: "Cañabota", query: "Canabota Sevilla" },
+  },
 
   {
     id: "ave-train",
@@ -128,12 +139,14 @@ export const bookingItems: BookingItem[] = [
     location: { name: "Sala de Despiece", query: "Sala de Despiece Madrid" },
   },
   {
-    id: "eslava",
-    title: "Eslava",
-    tier: "no-booking",
-    dateLabel: "Mon night",
-    notes: "Walk-in, arrive 9 PM. Some sources list Eslava closed Mondays — confirm hours.",
-    location: { name: "Eslava", query: "Eslava Sevilla" },
+    id: "mamarracha",
+    title: "Mamarracha",
+    tier: "book-now",
+    date: "2026-05-18",
+    dateLabel: "Mon May 18, 20:45",
+    partySize: 4,
+    notes: "Reservation confirmed at 20:45. Wood-fired tapas. Replaces Eslava (closed Mondays).",
+    location: { name: "Mamarracha", query: "Mamarracha Sevilla" },
   },
   {
     id: "walkins-seville",
