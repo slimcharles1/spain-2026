@@ -125,9 +125,9 @@ test.describe("Event Detail Modal (NEG-66)", () => {
     await page.goto("/");
     await page.evaluate(() => {
       const event = {
-        id: "d3-beach",
-        dayNumber: 3,
-        date: "2026-05-18",
+        id: "d4-beach",
+        dayNumber: 4,
+        date: "2026-05-19",
         time: "14:00",
         title: "Playa de la Caleta — Beach Afternoon",
         description: "Golden sand flanked by two castles.",
