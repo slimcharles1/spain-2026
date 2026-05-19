@@ -2,6 +2,7 @@
 
 import type { ScheduleEvent } from "@/lib/schedule-data";
 import type { EventState } from "@/lib/schedule-state";
+import type { WalkContext } from "@/lib/walking-distance";
 import {
   colors,
   eventSurfaces,
@@ -35,6 +36,8 @@ export interface EventCardProps {
   variant?: EventCardVariant;
   /** Override the default dispatch. Still fires if provided. */
   onTap?: (event: ScheduleEvent) => void;
+  /** Walking-distance from previous walkable event. Renders inline metadata. */
+  walk?: WalkContext | null;
   /** Optional children render below the description (callouts, attendees). */
   children?: React.ReactNode;
 }
@@ -54,6 +57,7 @@ export function EventCard({
   state,
   variant = "hero",
   onTap,
+  walk,
   children,
 }: EventCardProps) {
   const surface = eventSurfaces[state];
@@ -147,6 +151,7 @@ export function EventCard({
               }}
             >
               {event.location.name}
+              {walk ? ` · 🚶 ${walk.minutes} min` : ""}
             </span>
           )}
         </span>
@@ -236,6 +241,22 @@ export function EventCard({
         {typeMeta?.emoji ? `${typeMeta.emoji} ` : ""}
         {event.title}
       </span>
+
+      {/* Walking-distance from previous walkable event */}
+      {walk && (
+        <span
+          style={{
+            display: "block",
+            marginTop: 6,
+            fontSize: 12,
+            color: isNow ? colors.cream : colors.gray,
+            opacity: isNow ? 0.85 : 1,
+            letterSpacing: "0.02em",
+          }}
+        >
+          🚶 {walk.minutes} min from {walk.fromName}
+        </span>
+      )}
 
       {/* Description */}
       {event.description && (
