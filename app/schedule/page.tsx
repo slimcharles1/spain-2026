@@ -14,6 +14,7 @@ import {
   minutesUntil,
   partitionDay,
 } from "@/lib/schedule-state";
+import { walkFromPrevious } from "@/lib/walking-distance";
 import { colors } from "@/lib/design-tokens";
 import PosterStripe from "@/components/design-system/PosterStripe";
 import DayPicker, {
@@ -231,7 +232,12 @@ function ScheduleContent() {
       {/* NOW card */}
       {partitioned.now && (
         <section style={{ padding: "16px 20px 0" }} data-testid="section-now">
-          <EventCard event={partitioned.now} state="now" onTap={handleTap}>
+          <EventCard
+            event={partitioned.now}
+            state="now"
+            walk={walkFromPrevious(partitioned.now, day.events)}
+            onTap={handleTap}
+          >
             {renderAttendees(partitioned.now, "light")}
           </EventCard>
         </section>
@@ -252,7 +258,12 @@ function ScheduleContent() {
               attendees={["charles", "tony"]}
             />
           ) : (
-            <EventCard event={partitioned.next} state="next" onTap={handleTap}>
+            <EventCard
+              event={partitioned.next}
+              state="next"
+              walk={walkFromPrevious(partitioned.next, day.events)}
+              onTap={handleTap}
+            >
               {renderAttendees(partitioned.next, "dark")}
             </EventCard>
           )}
@@ -312,6 +323,7 @@ function ScheduleContent() {
                 event={event}
                 state="future"
                 variant="row"
+                walk={walkFromPrevious(event, day.events)}
                 onTap={handleTap}
               />
             ))}
