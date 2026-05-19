@@ -49,6 +49,17 @@ export const bookingItems: BookingItem[] = [
     location: { name: "Real Alcázar", query: "Real Alcazar Sevilla" },
   },
   {
+    id: "el-faro",
+    title: "El Faro de Cádiz",
+    tier: "book-now",
+    date: "2026-05-19",
+    dateLabel: "Tue May 19, 13:30",
+    partySize: 4,
+    url: "https://elfarodecadiz.com",
+    notes: "Reservation confirmed at 13:30. La Viña neighborhood. Order tortillitas de camarones and atún rojo (in season).",
+    location: { name: "El Faro de Cádiz", query: "El Faro de Cadiz" },
+  },
+  {
     id: "canabota",
     title: "Cañabota ⭐ (Michelin)",
     tier: "book-now",
