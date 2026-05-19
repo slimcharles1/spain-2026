@@ -19,16 +19,6 @@ export interface BookingItem {
 export const bookingItems: BookingItem[] = [
   // BOOK NOW — availability matters
   {
-    id: "lustau",
-    title: "Bodegas Lustau",
-    tier: "book-now",
-    date: "2026-05-19",
-    dateLabel: "Tue May 19",
-    partySize: 4,
-    url: "https://lustau.es",
-    location: { name: "Bodegas Lustau", query: "Bodegas Lustau Jerez" },
-  },
-  {
     id: "protos",
     title: "Bodegas Protos",
     tier: "book-now",
@@ -156,9 +146,9 @@ export const bookingItems: BookingItem[] = [
   },
   {
     id: "walkins-bars",
-    title: "La Venencia, La Clandestina",
+    title: "La Venencia, Tabanco El Pasaje, Parador de Cádiz rooftop",
     tier: "no-booking",
-    notes: "Walk-in bars — Madrid & Cádiz",
+    notes: "Walk-in bars — Madrid, Jerez & Cádiz",
   },
 ];
 
